@@ -1,0 +1,2117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reporting Cargill</title>
+<meta name="description" content="Comptes rendus d'intervention et reporting hebdomadaire des work orders.">
+<meta name="theme-color" content="#1D3557">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reporting">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout : une colonne de travail (680px max), barre navy en haut, actions principales en bas d'écran, gros boutons utilisables avec des gants. */
+:root{
+  color-scheme: light;
+  --bg:#ECEFF3; --card:#FFFFFF; --card2:#F5F7FA; --ink:#132030; --ink2:#2C3B4C; --muted:#5D6D7E; --line:#D4DBE3; --soft:#E5EAF0;
+  --navy:#1D3557; --on-navy:#FFFFFF; --on-navy-2:#B7C7DA; --navy-soft:#DCE5F0; --accent-ink:#1D3557; --st-new:#1F5FC4; --st-new-soft:#E2EBFA; --st-cont:#C2410C; --st-cont-soft:#FDE6D8;
+  --amber:#F2A900; --on-amber:#1B1400; --amber-soft:#FFF0C7; --amber-line:#D99A00; --warn-ink:#7A4F00;
+  --ok:#2C7A4D; --ok-soft:#DDF0E4; --danger:#B3261E; --on-danger:#FFFFFF; --danger-soft:#FBE3E0;
+  --focus:#2F6FDE;
+  --shadow:0 1px 2px rgba(19,32,48,.07),0 6px 18px rgba(19,32,48,.06);
+  --f-display:"Barlow Condensed","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --gl:max(16px,env(safe-area-inset-left,0px)); --gr:max(16px,env(safe-area-inset-right,0px));
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0C1218; --card:#151E28; --card2:#1A2430; --ink:#E7EDF3; --ink2:#C9D3DD; --muted:#8FA0B1; --line:#283646; --soft:#1F2A37;
+    --navy:#12263F; --on-navy:#FFFFFF; --on-navy-2:#9DB2CA; --navy-soft:#1A2D45; --accent-ink:#9DC0EA; --st-new:#86ADF2; --st-new-soft:#18263D; --st-cont:#FF9A5E; --st-cont-soft:#3A2112;
+    --amber:#F5B52A; --on-amber:#1B1400; --amber-soft:#382C0E; --amber-line:#C99210; --warn-ink:#F7C95C;
+    --ok:#62C48E; --ok-soft:#163325; --danger:#FF8F85; --on-danger:#2A0907; --danger-soft:#3B1714;
+    --focus:#82B2FF;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#0C1218; --card:#151E28; --card2:#1A2430; --ink:#E7EDF3; --ink2:#C9D3DD; --muted:#8FA0B1; --line:#283646; --soft:#1F2A37;
+    --navy:#12263F; --on-navy:#FFFFFF; --on-navy-2:#9DB2CA; --navy-soft:#1A2D45; --accent-ink:#9DC0EA; --st-new:#86ADF2; --st-new-soft:#18263D; --st-cont:#FF9A5E; --st-cont-soft:#3A2112;
+    --amber:#F5B52A; --on-amber:#1B1400; --amber-soft:#382C0E; --amber-line:#C99210; --warn-ink:#F7C95C;
+    --ok:#62C48E; --ok-soft:#163325; --danger:#FF8F85; --on-danger:#2A0907; --danger-soft:#3B1714;
+    --focus:#82B2FF;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:16px;line-height:1.4;min-height:100dvh;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+img{max-width:100%;display:block}
+:focus-visible{outline:2.5px solid var(--focus);outline-offset:2px}
+[hidden]{display:none!important}
+.num,.mono{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono)}
+svg.ic{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Barre du haut */
+.topbar{position:sticky;top:0;z-index:30;background:var(--navy);color:var(--on-navy);padding-top:env(safe-area-inset-top,0px)}
+.topbar-in{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:10px;min-height:60px;padding-left:var(--gl);padding-right:var(--gr)}
+.tb-title{flex:1;min-width:0}
+.tb-title b{display:block;font-family:var(--f-display);font-weight:600;font-size:21px;letter-spacing:.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-title small{display:block;color:var(--on-navy-2);font-size:13.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;color:inherit;flex:none}
+.icon-btn:active{background:rgba(255,255,255,.12)}
+
+.wrap{max-width:680px;margin:0 auto;padding:16px var(--gr) 136px var(--gl);display:flex;flex-direction:column;gap:16px}
+
+/* Boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 18px;border-radius:12px;font-weight:600;font-size:16.5px;line-height:1.15;text-align:center;border:1.5px solid transparent;text-decoration:none}
+.btn-primary{background:var(--amber);color:var(--on-amber);border-color:var(--amber-line)}
+.btn-primary:active{filter:brightness(.94)}
+.btn-big{min-height:60px;font-size:18px;width:100%;font-family:var(--f-display);font-weight:700;letter-spacing:.01em;font-size:20px}
+.btn-secondary{background:var(--card);color:var(--ink);border-color:var(--line)}
+.btn-secondary:active{background:var(--soft)}
+.btn-navy{background:var(--navy);color:var(--on-navy)}
+.btn-ghost{color:var(--ink2);border-color:transparent;background:transparent}
+.btn-danger{color:var(--danger);background:transparent;border-color:var(--line)}
+.btn-danger-fill{background:var(--danger);color:var(--on-danger)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.link{color:var(--focus);font-weight:600;text-decoration:underline;text-underline-offset:2px;font-size:inherit}
+
+/* Accueil */
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:2px}
+.sec-head h2{margin:0;font-family:var(--f-display);font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.04em}
+.chip-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-weight:600;font-size:15px;color:var(--ink2)}
+
+/* Semaine */
+.week{background:var(--card);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.wk-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;width:100%;padding:12px 16px;text-align:left;background:var(--card2);border-bottom:1px solid var(--line)}
+.week.current .wk-head{background:var(--navy);color:var(--on-navy);border-bottom-color:transparent}
+.wk-no{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;height:58px;border-radius:12px;border:2px solid currentColor;line-height:1}
+.wk-no small{font-family:var(--f-display);font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;opacity:.8}
+.wk-no b{font-family:var(--f-display);font-size:30px;font-weight:700}
+.wk-dates{min-width:0;display:flex;flex-direction:column;gap:1px}
+.wk-dates small{font-family:var(--f-display);font-size:13px;text-transform:uppercase;letter-spacing:.09em;font-weight:600;color:var(--amber)}
+.wk-dates b{font-family:var(--f-display);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.03em;line-height:1.1}
+.wk-dates span{font-size:14.5px;opacity:.82}
+.wk-tot{text-align:right}
+.wk-tot b{display:block;font-family:var(--f-mono);font-weight:600;font-size:18px}
+.wk-tot span{display:block;font-size:13px;opacity:.78}
+.past-toggle{display:grid;grid-template-columns:minmax(0,1fr) auto 20px;align-items:center;gap:12px;width:100%;min-height:54px;padding:8px 16px;border-radius:14px;border:1.5px dashed var(--line);background:transparent;text-align:left;font-weight:600;font-size:16px;color:var(--ink2)}
+.past-toggle .n{font-family:var(--f-mono);font-weight:600;color:var(--muted)}
+.past-toggle .fd-chev svg.ic{transform:rotate(90deg);transition:transform .2s}
+.past-toggle .fd-chev.up svg.ic{transform:rotate(-90deg)}
+.wk-up{border-top:1px solid var(--line)}
+.wk-up:first-child{border-top:0}
+.wk-up.open{background:var(--card2)}
+.wk-up .wk-days{border-top:1px solid var(--line);background:var(--card)}
+.wk-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto 20px;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 16px;text-align:left}
+.wk-row:active{background:var(--soft)}
+.wk-row .s{font-family:var(--f-display);font-weight:700;font-size:19px;letter-spacing:.02em}
+.wk-row .d{font-size:15px;color:var(--ink2);min-width:0}
+.wk-row .n{font-family:var(--f-mono);font-weight:600;font-size:15px;color:var(--muted)}
+.wk-up.open .dh-chev{transform:rotate(90deg)}
+.wk-foot{display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.wk-foot .btn{flex:1 1 220px}
+.sent{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--ok);font-weight:600}
+.sent svg.ic{width:16px;height:16px}
+
+/* Jour (s'ouvre dans la semaine) */
+.day{border-top:1px solid var(--line);scroll-margin-top:84px}
+.day:first-child{border-top:0}
+.day.open{background:var(--card2)}
+.day-head{display:grid;grid-template-columns:minmax(0,1fr) auto 20px;align-items:center;gap:12px;width:100%;min-height:64px;padding:10px 16px;text-align:left;cursor:pointer}
+.dh-send{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--navy);color:var(--on-navy);font-weight:700;font-size:14px}
+.dh-send svg.ic{width:16px;height:16px}
+.seg-ctl{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:12px;background:var(--soft)}
+.seg-ctl button{min-height:46px;border-radius:9px;font-weight:600;color:var(--ink2)}
+.seg-ctl button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.day-head:active{background:var(--soft)}
+.dh-name{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dh-name b{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;font-size:17px;line-height:1.2}
+.dh-name small{font-size:14px;color:var(--muted)}
+.day.empty .dh-name b{font-weight:600;color:var(--ink2)}
+.today-pill{font-family:var(--f-display);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:999px;background:var(--amber);color:var(--on-amber)}
+.dh-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.dh-right b{font-family:var(--f-mono);font-weight:600;font-size:16px}
+.dh-chev{color:var(--muted);display:grid;place-items:center;transition:transform .2s}
+.dh-chev svg.ic{width:20px;height:20px}
+.day.open .dh-chev{transform:rotate(90deg)}
+.st{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st svg.ic{width:14px;height:14px}
+.st-ok{background:var(--ok-soft);color:var(--ok)}
+.st-todo{background:var(--amber-soft);color:var(--warn-ink)}
+.day-body{display:flex;flex-direction:column;gap:10px;padding:0 16px 16px}
+.items{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.it{display:grid;grid-template-columns:80px minmax(0,1fr) auto;gap:10px;align-items:start;width:100%;padding:12px;text-align:left;border-top:1px solid var(--line)}
+.it:first-child{border-top:0}
+.it:active{background:var(--soft)}
+.it-time{font-family:var(--f-mono);font-weight:600;font-size:13.5px;color:var(--ink2);padding-top:2px}
+.it-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.it-title{font-weight:600;font-size:15.5px;line-height:1.3;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.it-sub{font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+.it-sub .wo{font-family:var(--f-mono);font-weight:600;color:var(--ink2)}
+.it-dur{font-family:var(--f-mono);font-weight:600;font-size:15px;padding-top:1px}
+
+/* Barre d'actions en bas (formulaire) */
+.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -6px 18px rgba(19,32,48,.06)}
+.actionbar-in{max-width:680px;margin:0 auto;display:flex;gap:10px;padding:10px var(--gr) 10px var(--gl)}
+.actionbar-in .btn{flex:1}
+.ab-err{max-width:680px;margin:0 auto;padding:10px var(--gr) 0 var(--gl);color:var(--danger);font-weight:600;font-size:14.5px}
+
+/* Formulaire */
+.fsec{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:14px}
+.fsec-title{font-family:var(--f-display);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.05em;margin:0;display:flex;align-items:center;gap:8px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field > label,.lbl{font-family:var(--f-display);font-weight:600;font-size:14.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.inp,select.inp,textarea.inp{width:100%;min-height:50px;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);font-size:16.5px}
+textarea.inp{min-height:96px;resize:vertical;line-height:1.4}
+select.inp{appearance:none;-webkit-appearance:none;padding-right:38px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+.inp:focus{border-color:var(--focus);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 22%,transparent)}
+.inp.mono{font-family:var(--f-mono);font-weight:500;letter-spacing:.03em}
+.inp[disabled]{opacity:.55}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hint{font-size:14px;color:var(--muted);line-height:1.35}
+.hint .link{font-size:14px}
+.hint svg.ic{width:16px;height:16px;vertical-align:-3px}
+.read-tag{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;color:var(--ok);margin-left:6px;text-transform:none;letter-spacing:0;font-family:var(--f-body)}
+.date-btn{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);text-align:left}
+.date-btn b{display:block;font-weight:600;font-size:17px}
+.date-btn small{display:block;color:var(--muted);font-size:14px}
+.date-btn .ic{color:var(--ink2)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:40px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card2);font-weight:600;font-size:14.5px;font-family:var(--f-mono);color:var(--ink2)}
+.chip.on{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+.chip span{font-family:var(--f-body)}
+
+.wo-drop{border:2px dashed var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--card2)}
+.wo-drop p{margin:0;font-size:14.5px;color:var(--muted)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn-row > *{flex:1 1 140px}
+.btn-row.stack > *{flex-basis:100%}
+.file-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--card);border:1.5px solid var(--line);min-width:0}
+.file-chip .fc-name{flex:1;min-width:0;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-chip .fc-name small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.file-chip button{font-weight:600;color:var(--focus);font-size:14.5px;padding:6px 4px}
+.progress{height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--amber);width:0;transition:width .3s}
+.progress.indet i{width:35%;animation:indet 1.2s ease-in-out infinite}
+@keyframes indet{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+.found{display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.found .ok{color:var(--ok);font-weight:600}
+.conflict{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 10px;border-radius:8px;background:var(--amber-soft)}
+.conflict span{min-width:0;overflow-wrap:anywhere}
+.conflict button{flex:none}
+
+.hist{border-radius:10px;background:var(--navy-soft);padding:10px 12px;font-size:14.5px;display:flex;flex-direction:column;gap:6px}
+.hist b{font-weight:700}
+
+.mic-wrap{position:relative}
+.mic-wrap textarea{padding-right:64px}
+.mic{position:absolute;right:8px;top:8px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:var(--on-navy)}
+.mic.on{background:var(--danger);color:#fff;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 45%,transparent)}50%{box-shadow:0 0 0 10px transparent}}
+.mic-wrap input.inp{padding-right:56px}
+.mic.sm{width:40px;height:40px;top:5px;right:5px}
+.mic.sm svg.ic{width:19px;height:19px}
+
+/* Dossiers de WO */
+.folders{display:flex;flex-direction:column;gap:10px}
+.folder{display:grid;grid-template-columns:48px minmax(0,1fr) auto 20px;align-items:center;gap:14px;width:100%;min-height:78px;padding:14px 16px;text-align:left;background:var(--card);border-radius:16px;box-shadow:var(--shadow)}
+.folder:active{background:var(--card2)}
+.fd-ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:var(--navy-soft);color:var(--accent-ink)}
+.fd-ic svg.ic{width:24px;height:24px}
+.fd-ic.todo{background:var(--amber-soft);color:var(--warn-ink)}
+.fd-ic.done{background:var(--ok-soft);color:var(--ok)}
+.fd-txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fd-txt b{font-weight:700;font-size:16.5px;line-height:1.25}
+.fd-txt small{font-size:14px;color:var(--muted)}
+.fd-n{font-family:var(--f-mono);font-weight:600;font-size:22px}
+.fd-chev{color:var(--muted);display:grid;place-items:center}
+.fd-chev svg.ic{width:20px;height:20px}
+.page-h{margin:0;font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1.1;text-wrap:balance}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip-btn.on{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+select.chip-btn{appearance:none;-webkit-appearance:none;padding-right:32px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sel-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:600;font-size:15px;padding:2px 2px 0}
+.woc.rec{cursor:pointer}
+.woc.picked{box-shadow:0 0 0 2.5px var(--accent-ink),var(--shadow)}
+.ck{width:26px;height:26px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:transparent}
+.ck svg.ic{width:16px;height:16px}
+.ck.on{background:var(--accent-ink);border-color:var(--accent-ink);color:var(--card)}
+.woc-note{font-size:14px;font-style:italic;color:var(--ink2);overflow-wrap:anywhere}
+.longtext{margin:0;white-space:pre-line;line-height:1.5;font-size:15.5px;overflow-wrap:anywhere}
+.ops{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.hand{background:var(--amber-soft);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.hand p{margin:0;font-size:15px;line-height:1.45;overflow-wrap:anywhere}
+.rec-title{margin:0;font-weight:700;font-size:19px;line-height:1.3;text-wrap:balance;overflow-wrap:anywhere}
+.st-hot{background:var(--danger-soft);color:var(--danger)}
+.st-new{background:var(--st-new-soft);color:var(--st-new)}
+.st-cont{background:var(--st-cont-soft);color:var(--st-cont)}
+.woc.rec{padding-left:21px}
+.woc.rec.s-new{box-shadow:inset 6px 0 0 var(--st-new),var(--shadow)}
+.woc.rec.s-started{box-shadow:inset 6px 0 0 var(--st-cont),var(--shadow)}
+.woc.rec.s-done{box-shadow:inset 6px 0 0 var(--ok),var(--shadow)}
+.woc.rec.s-new.picked{box-shadow:inset 6px 0 0 var(--st-new),0 0 0 2.5px var(--accent-ink),var(--shadow)}
+.woc.rec.s-started.picked{box-shadow:inset 6px 0 0 var(--st-cont),0 0 0 2.5px var(--accent-ink),var(--shadow)}
+.woc.rec.s-done.picked{box-shadow:inset 6px 0 0 var(--ok),0 0 0 2.5px var(--accent-ink),var(--shadow)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lg{display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);text-align:left;color:var(--ink2)}
+.lg i{width:14px;height:14px;border-radius:50%;flex:none}
+.lg b{display:block;font-size:15.5px;font-weight:700;color:var(--ink)}
+.lg small{display:block;font-size:13px;color:var(--muted)}
+.lg .n{margin-left:auto;font-family:var(--f-mono);font-weight:600;font-size:18px;color:var(--ink)}
+.lg.new i{background:var(--st-new)}
+.lg.started i{background:var(--st-cont)}
+.lg.on.new{background:var(--st-new-soft);border-color:var(--st-new)}
+.lg.on.started{background:var(--st-cont-soft);border-color:var(--st-cont)}
+.st-info{background:var(--navy-soft);color:var(--ink2)}
+.st-muted{background:var(--soft);color:var(--muted)}
+.follow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--card2);cursor:pointer}
+.follow b{display:block;font-weight:700;font-size:16px}
+.follow small{display:block;font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+.follow input{width:26px;height:26px;accent-color:var(--amber);flex:none}
+.follow.on{border-color:var(--amber-line);background:var(--amber-soft)}
+
+/* Barre d'onglets */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar-in{max-width:680px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);padding:4px var(--gr) 4px var(--gl)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px;border-radius:12px;font-weight:600;font-size:13px;color:var(--muted)}
+.tab svg.ic{width:24px;height:24px}
+.tab.on{color:var(--ink)}
+.tab.on svg.ic{color:var(--navy)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .tab.on svg.ic{color:var(--amber)} }
+:root[data-theme="dark"] .tab.on svg.ic{color:var(--amber)}
+.tab:active{background:var(--soft)}
+
+/* Mes WO */
+.search{position:relative}
+.search .inp{padding-left:42px}
+.search svg.ic{position:absolute;left:12px;top:14px;color:var(--muted)}
+.wo-list{display:flex;flex-direction:column;gap:10px}
+.woc{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px}
+.woc:active{background:var(--card2)}
+.woc-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wo-tag{font-family:var(--f-mono);font-weight:600;font-size:14px;padding:2px 8px;border:1.5px solid var(--ink);border-radius:5px;letter-spacing:.02em}
+.woc-cum{font-family:var(--f-mono);font-weight:600;font-size:16px;margin-left:auto}
+.woc-title{font-weight:600;font-size:16px;line-height:1.3;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.woc-sub{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.chips-row{display:flex;gap:6px;flex-wrap:wrap}
+.empty-box{background:var(--card);border:1.5px dashed var(--line);border-radius:14px;padding:22px 16px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:8px;align-items:center}
+.empty-box b{color:var(--ink);font-size:17px}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:15px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{flex:1 1 90px;background:var(--card2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--f-mono);font-weight:600;font-size:18px}
+.stat span{font-size:13px;color:var(--muted)}
+.thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.thumbs button{aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--soft);max-width:100%}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ph{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--soft);max-width:100%}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph .rm{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;background:rgba(10,16,24,.7);color:#fff;display:grid;place-items:center}
+.ph .rm svg.ic{width:18px;height:18px}
+.ph-add{aspect-ratio:1;border-radius:10px;border:2px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:14px;color:var(--ink2);background:var(--card2);cursor:pointer;max-width:100%}
+
+.banner{background:var(--amber-soft);border:1.5px solid var(--amber-line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+.banner .btn-row .btn{min-height:44px}
+.danger-zone{display:flex;justify-content:center}
+
+/* Feuille du bas */
+.backdrop{position:fixed;inset:0;background:rgba(8,12,18,.48);z-index:40;opacity:0;transition:opacity .2s}
+.backdrop.show{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--card);border-radius:20px 20px 0 0;max-height:92dvh;overflow:auto;transform:translateY(100%);transition:transform .25s ease;padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet.show{transform:none}
+.sheet-in{max-width:680px;margin:0 auto;padding:10px var(--gr) 20px var(--gl);display:flex;flex-direction:column;gap:14px}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:2px auto 4px}
+.sh-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sh-head h3{margin:0;font-family:var(--f-display);font-weight:700;font-size:23px;line-height:1.1;text-wrap:balance}
+.sh-head p{margin:4px 0 0;color:var(--muted);font-size:15px}
+.loading{display:flex;flex-direction:column;gap:10px;padding:10px 0;color:var(--muted)}
+.pdf-pages{display:flex;flex-direction:column;gap:12px}
+.pdf-pages img{width:100%;border-radius:6px;box-shadow:var(--shadow);background:#fff;border:1px solid var(--line)}
+
+/* Calendrier */
+.cal-nav{display:flex;align-items:center;justify-content:space-between}
+.cal-nav b{font-family:var(--f-display);font-weight:700;font-size:21px;text-transform:capitalize}
+.cal-nav .icon-btn{border:1.5px solid var(--line);color:var(--ink)}
+.cal{display:grid;grid-template-columns:34px repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.cal .h{font-family:var(--f-display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:4px 0}
+.cal .wn{font-family:var(--f-mono);font-size:12px;color:var(--muted);display:grid;place-items:center}
+.cal button.d{position:relative;height:46px;border-radius:10px;font-weight:600;font-size:16.5px;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.cal button.d.out{color:var(--muted);opacity:.5}
+.cal button.d.we{opacity:.25;cursor:default}
+.cal button.d.tdy{box-shadow:inset 0 0 0 2px var(--amber)}
+.cal button.d.sel{background:var(--navy);color:var(--on-navy)}
+.cal button.d.has::after{content:"";position:absolute;bottom:6px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--amber)}
+.cal button.d:active{background:var(--soft)}
+
+/* Réglages */
+.set-list{display:flex;flex-direction:column;gap:14px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px}
+.toggle input{width:24px;height:24px;accent-color:var(--navy)}
+.small{font-size:13.5px;color:var(--muted)}
+
+/* Toast */
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:60;background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-weight:600;font-size:15px;width:max-content;max-width:min(92vw,520px);text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:var(--shadow)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.err{background:var(--danger);color:var(--on-danger)}
+
+@media (min-width:560px){ .today-actions{grid-template-columns:auto auto;justify-content:start} }
+@media (max-width:380px){ .row2{grid-template-columns:1fr} .wk-no{min-width:50px;height:52px} .wk-no b{font-size:26px} }
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="sheetRoot"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   Reporting Cargill — comptes rendus d'intervention
+   Toutes les données restent sur le téléphone (IndexedDB).
+   ========================================================================== */
+
+const CONFIG = {
+  /* Envoi direct par Gmail (optionnel) : colle ici l'ID client OAuth Google.
+     Voir LISEZMOI.md, section « Envoi direct depuis Gmail ». Laisse vide pour
+     passer par le partage du téléphone (Gmail avec le PDF déjà joint). */
+  googleClientId: ''
+};
+const APP_VERSION = '1.4';
+const PREVIEW = false; // true uniquement pour l'aperçu publié sur Claude
+const DEMO_WO_B64 = '';
+const DEMO_WO2_B64 = '';
+const PREVIEW_IMPORT = null;
+const LIBS = {
+  jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+  autotable: 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js',
+  pdfjs: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
+  pdfjsWorker: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js',
+  tesseract: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+  pdflib: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+  gis: 'https://accounts.google.com/gsi/client'
+};
+
+/* ---------- Petits outils ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const pad = n => String(n).padStart(2, '0');
+const plural = (n, one, many) => `${n} ${n > 1 ? many : one}`;
+let debTimers = {};
+const debounce = (key, fn, ms = 400) => { clearTimeout(debTimers[key]); debTimers[key] = setTimeout(fn, ms); };
+
+const ICONS = {
+  back: '<path d="M15 18l-6-6 6-6"/>',
+  chev: '<path d="M9 18l6-6-6-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  cal: '<rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+  mic: '<rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/>',
+  stop: '<rect x="7" y="7" width="10" height="10" rx="1.5"/>',
+  cam: '<path d="M4 7.5h3l1.5-2.5h7L17 7.5h3a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/>',
+  img: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
+  file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  send: '<path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/>',
+  dl: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  sliders: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
+};
+const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* ---------- Dates & heures ---------- */
+const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const DAYS_SHORT = ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'];
+const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fromKey = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; };
+const mondayOf = d => addDays(d, -((d.getDay() + 6) % 7));
+const todayKey = () => keyOf(new Date());
+const isWeekend = d => d.getDay() === 0 || d.getDay() === 6;
+const workdayKey = () => { const d = new Date(), g = d.getDay(); return keyOf(addDays(d, g === 6 ? -1 : g === 0 ? -2 : 0)); };
+function isoWeek(d) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y = t.getUTCFullYear(); const y0 = new Date(Date.UTC(y, 0, 1));
+  return { week: Math.ceil(((t - y0) / 864e5 + 1) / 7), year: y };
+}
+const dnum = d => d.getDate() === 1 ? '1er' : String(d.getDate());
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const fmtLong = d => `${DAYS[d.getDay()]} ${dnum(d)} ${MONTHS[d.getMonth()]}`;
+const fmtLongY = d => `${fmtLong(d)} ${d.getFullYear()}`;
+const fmtShort = d => `${DAYS_SHORT[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+const fmtNum = d => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+function weekLabel(mon, withWeekend) {
+  const end = addDays(mon, withWeekend ? 6 : 4);
+  if (mon.getMonth() === end.getMonth()) return `du ${dnum(mon)} au ${dnum(end)} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+  const y1 = mon.getFullYear() !== end.getFullYear() ? ' ' + mon.getFullYear() : '';
+  return `du ${dnum(mon)} ${MONTHS[mon.getMonth()]}${y1} au ${dnum(end)} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+}
+const toMin = t => { if (!t) return null; const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+const fmtH = t => { const m = toMin(t); if (m == null) return ''; const h = Math.floor(m / 60), mm = m % 60; return mm ? `${h}h${pad(mm)}` : `${h}h`; };
+const fmtRange = (a, b) => a && b ? `${fmtH(a)}–${fmtH(b)}` : a ? `à partir de ${fmtH(a)}` : 'À préciser';
+const fmtDur = m => { if (m == null || isNaN(m)) return '—'; const h = Math.floor(m / 60), mm = Math.round(m % 60); return `${h}h${pad(mm)}`; };
+const fmtDec = m => m == null ? '' : (m / 60).toFixed(2).replace('.', ',');
+
+/* ---------- Stockage local (IndexedDB) ---------- */
+const DB = {
+  db: null, mem: { reports: new Map(), files: new Map(), kv: new Map(), wos: new Map() },
+  open() {
+    return Promise.race([DB._open(), new Promise(r => setTimeout(() => r(false), 2500))]);
+  },
+  _open() {
+    return new Promise(res => {
+      if (!('indexedDB' in window)) return res(false);
+      let r;
+      try { r = indexedDB.open('reporting-cargill', 2); } catch (e) { return res(false); }
+      r.onupgradeneeded = () => {
+        const d = r.result;
+        if (!d.objectStoreNames.contains('reports')) d.createObjectStore('reports', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('files')) d.createObjectStore('files', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('kv')) d.createObjectStore('kv', { keyPath: 'k' });
+        if (!d.objectStoreNames.contains('wos')) d.createObjectStore('wos', { keyPath: 'id' });
+      };
+      r.onsuccess = () => { DB.db = r.result; res(true); };
+      r.onerror = () => res(false);
+    });
+  },
+  _req(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  _st(s, mode = 'readonly') { return DB.db.transaction(s, mode).objectStore(s); },
+  all(s) { return DB.db ? DB._req(DB._st(s).getAll()) : Promise.resolve([...DB.mem[s].values()]); },
+  get(s, k) { return DB.db ? DB._req(DB._st(s).get(k)) : Promise.resolve(DB.mem[s].get(k)); },
+  put(s, v) { if (!DB.db) { DB.mem[s].set(v.id ?? v.k, v); return Promise.resolve(); } return DB._req(DB._st(s, 'readwrite').put(v)); },
+  del(s, k) { if (!DB.db) { DB.mem[s].delete(k); return Promise.resolve(); } return DB._req(DB._st(s, 'readwrite').delete(k)); },
+  clear(s) { if (!DB.db) { DB.mem[s].clear(); return Promise.resolve(); } return DB._req(DB._st(s, 'readwrite').clear()); },
+  async getKV(k, def) { const r = await DB.get('kv', k); return r ? r.v : def; },
+  setKV(k, v) { return DB.put('kv', { k, v }); }
+};
+
+/* ---------- État ---------- */
+const DEFAULT_SETTINGS = {
+  name: 'Dimitri Van Calster', company: 'Cargill', site: '',
+  managerName: '', managerEmail: '',
+  dayStart: '07:00', dayEnd: '15:00', lunchStart: '12:00', lunchEnd: '13:00',
+  pdfPhotos: true, pdfWO: true, gmailGranted: false, sendMode: 'week'
+};
+const S = { showPast: false, settings: { ...DEFAULT_SETTINGS }, reports: [], sent: {}, openWeeks: new Set(), openDays: new Set([workdayKey()]), extraWeeks: new Set(), focusDay: null, route: null, prevRoute: null, wos: [], wf: {}, sel: new Set(), selMode: false, shown: [], scrollMem: {}, restoring: false };
+const urlCache = new Map();
+async function fileURL(id) {
+  if (urlCache.has(id)) return urlCache.get(id);
+  const rec = await DB.get('files', id); if (!rec) return null;
+  const u = URL.createObjectURL(rec.blob); urlCache.set(id, u); return u;
+}
+const saveSettings = () => debounce('settings', () => DB.setKV('settings', S.settings), 300);
+
+/* ---------- Calculs ---------- */
+function autoDuration(start, end) {
+  const a = toMin(start), b = toMin(end);
+  if (a == null || b == null || b <= a) return null;
+  let d = b - a;
+  const ls = toMin(S.settings.lunchStart), le = toMin(S.settings.lunchEnd);
+  if (ls != null && le != null && le > ls) d -= Math.max(0, Math.min(b, le) - Math.max(a, ls));
+  return Math.max(0, d);
+}
+const lunchOverlap = (start, end) => { const a = toMin(start), b = toMin(end), ls = toMin(S.settings.lunchStart), le = toMin(S.settings.lunchEnd); return a != null && b != null && ls != null && le != null && Math.min(b, le) - Math.max(a, ls) > 0; };
+const normWO = s => (s || '').toUpperCase().replace(/^\s*(WO|OT|N°|NO)[\s.:#-]*/, '').replace(/[^A-Z0-9]/g, '');
+function cmpReports(a, b) {
+  if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+  const sa = toMin(a.start) ?? 9999, sb = toMin(b.start) ?? 9999;
+  if (sa !== sb) return sa - sb;
+  return (a.createdAt || 0) - (b.createdAt || 0);
+}
+function cumulMap() {
+  const by = {}, out = {};
+  for (const r of S.reports) { const w = normWO(r.wo); if (w) (by[w] = by[w] || []).push(r); }
+  for (const w in by) {
+    let run = 0;
+    for (const r of by[w].sort(cmpReports)) { run = r.cumulManual != null ? r.cumulManual : run + (r.duration || 0); out[r.id] = run; }
+  }
+  return out;
+}
+function woHistory(wo, draft) {
+  const w = normWO(wo); if (!w) return null;
+  const all = S.reports.filter(r => r.id !== draft.id && normWO(r.wo) === w).sort(cmpReports);
+  let prev = 0; const before = [];
+  for (const r of all) if (cmpReports(r, draft) < 0) { prev = r.cumulManual != null ? r.cumulManual : prev + (r.duration || 0); before.push(r); }
+  return { all, before, prev };
+}
+const reportsOn = k => S.reports.filter(r => r.date === k).sort(cmpReports);
+const sumDur = rs => rs.reduce((s, r) => s + (r.duration || 0), 0);
+
+/* ---------- Work orders classés (dossiers) ---------- */
+const recById = id => S.wos.find(w => w.id === id) || null;
+function recForNumber(num) { const n = normWO(num); if (!n) return null; return S.wos.find(w => w.id === n || normWO(w.number) === n) || null; }
+function reportsOfRec(rec) { const n = normWO(rec.number); return S.reports.filter(r => r.woRef === rec.id || (n && normWO(r.wo) === n)).sort(cmpReports); }
+async function putRec(rec) { rec.updatedAt = Date.now(); await DB.put('wos', rec); const i = S.wos.findIndex(x => x.id === rec.id); if (i >= 0) S.wos[i] = rec; else S.wos.push(rec); }
+function fileInUse(id) { return S.reports.some(r => r.woFile === id || (r.photos || []).includes(id)) || S.wos.some(w => w.fileId === id); }
+function recSentAt(rec) { return Math.max(rec.sentAt || 0, ...reportsOfRec(rec).map(r => r.sentAt || 0)) || null; }
+function statusOf(rec) { if (rec.status === 'done') return { label: 'Réalisé', cls: 'st-ok', key: 'done' }; return reportsOfRec(rec).length || rec.stage === 'started' ? { label: 'À terminer', cls: 'st-cont', key: 'started' } : { label: 'À traiter', cls: 'st-new', key: 'new' }; }
+function prioCls(p) { const s = String(p || '').trim(); return /^1/.test(s) ? 'st-hot' : /^2/.test(s) ? 'st-todo' : 'st-info'; }
+async function syncRecordAfterSave(rep) {
+  let rec = (rep.woRef && recById(rep.woRef)) || recForNumber(rep.wo);
+  if (!rec && !rep.followUp) return null;
+  if (!rec) {
+    const n = normWO(rep.wo);
+    rec = { id: n || 'cr-' + rep.id, number: rep.wo, title: rep.request || (rep.comments || '').slice(0, 90) || 'Intervention', building: rep.building, location: rep.location, equipment: rep.equipment, priority: '', type: '', requester: '', woDate: rep.date, doneDate: '', note: '', source: 'manual', status: 'open', fileId: rep.woFile || null, createdAt: Date.now() };
+  }
+  for (const [k, rk] of [['number', 'wo'], ['title', 'request'], ['building', 'building'], ['location', 'location'], ['equipment', 'equipment']]) if (!rec[k] && rep[rk]) rec[k] = rep[rk];
+  if (!rec.fileId && rep.woFile) rec.fileId = rep.woFile;
+  if (!rec.priority && rep.priority) rec.priority = rep.priority;
+  if (!rec.requester && rep.requester) rec.requester = rep.requester;
+  if (rep.woRef !== rec.id) { rep.woRef = rec.id; await DB.put('reports', rep); }
+  const rs = reportsOfRec(rec), latest = rs[rs.length - 1];
+  if (!latest || latest.id === rep.id) { rec.status = rep.followUp ? 'open' : 'done'; if (!rep.followUp) rec.doneDate = rep.date; }
+  await putRec(rec);
+  return rec;
+}
+async function syncRecordAfterDelete(rep) {
+  const rec = (rep.woRef && recById(rep.woRef)) || recForNumber(rep.wo); if (!rec) return;
+  const rs = reportsOfRec(rec);
+  if (!rs.length && rec.source === 'manual') { await DB.del('wos', rec.id); S.wos = S.wos.filter(w => w.id !== rec.id); return; }
+  if (rs.length) { const last = rs[rs.length - 1]; rec.status = last.followUp ? 'open' : 'done'; await putRec(rec); }
+}
+
+/* ---------- Interface : toast, feuilles ---------- */
+function toast(msg, kind = '') {
+  const t = $('#toast'); t.textContent = msg; t.className = 'show ' + kind;
+  clearTimeout(toast._t); toast._t = setTimeout(() => { t.className = ''; }, kind === 'err' ? 5200 : 3400);
+}
+function openSheet(html, { onClose } = {}) {
+  closeSheet(true);
+  const root = $('#sheetRoot');
+  root.innerHTML = `<div class="backdrop" data-act="sheet-close"></div><div class="sheet" role="dialog" aria-modal="true"><div class="sheet-in"><div class="grab"></div>${html}</div></div>`;
+  S.sheetClose = onClose || null;
+  requestAnimationFrame(() => { $('.backdrop', root)?.classList.add('show'); $('.sheet', root)?.classList.add('show'); });
+  return $('.sheet-in', root);
+}
+function closeSheet(instant) {
+  const root = $('#sheetRoot'); if (!root.firstChild) return;
+  const cb = S.sheetClose; S.sheetClose = null;
+  if (instant) { root.innerHTML = ''; } else {
+    $('.backdrop', root)?.classList.remove('show'); $('.sheet', root)?.classList.remove('show');
+    setTimeout(() => { if (!$('.sheet.show', root)) root.innerHTML = ''; }, 260);
+  }
+  if (cb) cb();
+}
+function confirmSheet({ title, text, ok = 'Confirmer', danger = false }) {
+  return new Promise(res => {
+    let done = false;
+    const el = openSheet(`<div class="sh-head"><div><h3>${esc(title)}</h3>${text ? `<p>${esc(text)}</p>` : ''}</div></div>
+      <div class="btn-row"><button class="btn btn-secondary" data-r="0">Annuler</button><button class="btn ${danger ? 'btn-danger-fill' : 'btn-primary'}" data-r="1">${esc(ok)}</button></div>`,
+      { onClose: () => { if (!done) { done = true; res(false); } } });
+    $$('[data-r]', el).forEach(b => b.onclick = () => { done = true; res(b.dataset.r === '1'); closeSheet(); });
+  });
+}
+
+/* ---------- Calendrier ---------- */
+function openCalendar(selKey, onPick, title = 'Choisir une date') {
+  let cur = fromKey(selKey || todayKey()); cur = new Date(cur.getFullYear(), cur.getMonth(), 1);
+  const has = new Set(S.reports.map(r => r.date));
+  const el = openSheet(`<div class="sh-head"><h3>${esc(title)}</h3><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div><div id="calBox"></div>
+    <button class="btn btn-secondary" id="calToday">${isWeekend(new Date()) ? 'Dernier jour travaillé' : "Aujourd'hui"}</button>`);
+  const draw = () => {
+    const first = mondayOf(cur); const tk = todayKey();
+    let h = `<div class="cal-nav"><button class="icon-btn" id="calPrev" aria-label="Mois précédent">${ic('back')}</button><b>${MONTHS[cur.getMonth()]} ${cur.getFullYear()}</b><button class="icon-btn" id="calNext" aria-label="Mois suivant">${ic('chev')}</button></div>
+      <div class="cal"><span class="h">S</span>${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => `<span class="h">${d}</span>`).join('')}`;
+    for (let w = 0; w < 6; w++) {
+      const mon = addDays(first, w * 7);
+      if (w > 3 && mon.getMonth() !== cur.getMonth()) break;
+      h += `<span class="wn">${isoWeek(mon).week}</span>`;
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(mon, i), k = keyOf(d);
+        const we = isWeekend(d);
+        const cls = ['d', d.getMonth() !== cur.getMonth() ? 'out' : '', we ? 'we' : '', k === tk ? 'tdy' : '', k === selKey ? 'sel' : '', has.has(k) ? 'has' : ''].join(' ');
+        h += `<button type="button" class="${cls}" data-k="${k}" aria-label="${fmtLongY(d)}" ${we ? 'disabled' : ''}>${d.getDate()}</button>`;
+      }
+    }
+    $('#calBox', el).innerHTML = h + '</div>';
+    $('#calPrev', el).onclick = () => { cur = new Date(cur.getFullYear(), cur.getMonth() - 1, 1); draw(); };
+    $('#calNext', el).onclick = () => { cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1); draw(); };
+    $$('button.d', el).forEach(b => b.onclick = () => { closeSheet(); onPick(b.dataset.k); });
+  };
+  $('#calToday', el).onclick = () => { closeSheet(); onPick(workdayKey()); };
+  draw();
+}
+
+/* ---------- Navigation ---------- */
+function parseRoute() {
+  const h = location.hash.replace(/^#\/?/, '');
+  const [path, qs] = h.split('?'); const parts = path.split('/');
+  const q = new URLSearchParams(qs || '');
+  if (parts[0] === 'jour' && /^\d{4}-\d{2}-\d{2}$/.test(parts[1] || '')) return { name: 'day', date: parts[1] };
+  if (parts[0] === 'cr' && parts[1] === 'nouveau') return { name: 'form', id: null, date: q.get('date'), woRef: q.get('wo') };
+  if (parts[0] === 'cr' && parts[1]) return { name: 'form', id: parts[1] };
+  if (parts[0] === 'reglages') return { name: 'settings' };
+  if (parts[0] === 'wo' && (parts[1] === 'afaire' || parts[1] === 'realises')) return { name: 'wo-folder', kind: parts[1] };
+  if (parts[0] === 'wo' && parts[1] === 'envoyes') return { name: 'wo-sent' };
+  if (parts[0] === 'wo' && parts[1] === 'fiche' && parts[2]) return { name: 'wo-rec', id: decodeURIComponent(parts[2]) };
+  if (parts[0] === 'wo' && parts[1]) return { name: 'wo-detail', w: decodeURIComponent(parts[1]) };
+  if (parts[0] === 'wo') return { name: 'wo' };
+  return { name: 'home' };
+}
+const go = h => { S.scrollMem[location.hash] = window.scrollY; history.pushState({ inApp: true }, '', '#/' + h); route(); };
+const replaceTo = h => { history.replaceState({ inApp: !!(history.state && history.state.inApp) }, '', '#/' + h); route(); };
+const canGoBack = () => !!(history.state && history.state.inApp);
+function back(fallback) { if (canGoBack()) history.back(); else replaceTo(fallback); }
+window.addEventListener('popstate', () => { S.restoring = true; route(); });
+function route() {
+  closeSheet(true); stopMic();
+  const r = parseRoute();
+  S.prevRoute = S.route; S.route = r;
+  if (!(r.name === 'wo-folder' && S.prevRoute && ['wo-folder', 'wo-rec'].includes(S.prevRoute.name))) { S.selMode = false; S.sel.clear(); }
+  const restore = S.restoring && !S.focusDay; S.restoring = false;
+  window.scrollTo(0, 0);
+  if (r.name === 'day') { focusDay(r.date); renderHome(); }
+  else if (r.name === 'form') renderForm(r);
+  else if (r.name === 'settings') renderSettings();
+  else if (r.name === 'wo') renderWoHome();
+  else if (r.name === 'wo-folder') renderWoFolder(r.kind);
+  else if (r.name === 'wo-sent') renderWoList();
+  else if (r.name === 'wo-rec') renderRecDetail(r.id);
+  else if (r.name === 'wo-detail') renderWoDetail(r.w);
+  else renderHome();
+  if (restore) { const y = S.scrollMem[location.hash]; if (y != null) setTimeout(() => window.scrollTo(0, y), 30); }
+}
+
+/* ---------- Onglets ---------- */
+function tabbar(active) {
+  const t = (id, h, icon, label) => `<button class="tab ${active === id ? 'on' : ''}" data-act="tab" data-h="${h}" ${active === id ? 'aria-current="page"' : ''}>${ic(icon)}${label}</button>`;
+  return `<nav class="tabbar" aria-label="Navigation"><div class="tabbar-in">${t('home', '', 'cal', 'Semaines')}${t('wo', 'wo', 'file', 'Mes WO')}${t('settings', 'reglages', 'sliders', 'Réglages')}</div></nav>`;
+}
+
+/* ---------- Accueil : semaines et jours ---------- */
+function sentBadge(key) {
+  const s = S.sent[key]; if (!s) return '';
+  const d = new Date(s.at);
+  return `<span class="sent">${ic('check')} ${s.how === 'gmail' ? 'Envoyé' : 'Partagé'} le ${pad(d.getDate())}/${pad(d.getMonth() + 1)} à ${pad(d.getHours())}h${pad(d.getMinutes())}</span>`;
+}
+function dayStatus(k, rs, open) {
+  if (!rs.length) return '';
+  const s = S.sent['day:' + k];
+  if (s) return `<span class="st st-ok">${ic('check')} ${s.how === 'gmail' ? 'Envoyé' : 'Partagé'}</span>`;
+  if (S.settings.sendMode === 'day' && k <= todayKey() && !open) return `<button type="button" class="dh-send" data-act="export-day" data-k="${k}">${ic('send')} Envoyer</button>`;
+  return '';
+}
+function itemRow(r, cm) {
+  const nPh = (r.photos || []).length;
+  const sub = [r.wo ? `<span class="wo">WO ${esc(r.wo)}</span>` : '', r.building ? esc(r.building) : '', r.wo ? `cumul ${fmtDur(cm[r.id])}` : '', nPh ? plural(nPh, 'photo', 'photos') : '', r.followUp ? 'à terminer' : ''].filter(Boolean).join(' · ');
+  return `<button class="it" data-act="edit" data-id="${r.id}">
+    <span class="it-time">${esc(fmtRange(r.start, r.end))}</span>
+    <span class="it-main"><span class="it-title">${esc(r.request || r.comments || 'Intervention')}</span>${sub ? `<span class="it-sub">${sub}</span>` : ''}</span>
+    <span class="it-dur">${fmtDur(r.duration)}</span></button>`;
+}
+function dayBlock(d, cm) {
+  const k = keyOf(d), rs = reportsOn(k), open = S.openDays.has(k), isToday = k === todayKey();
+  const wos = [...new Set(rs.map(r => r.wo && r.wo.trim()).filter(Boolean))];
+  const meta = rs.length ? plural(rs.length, 'intervention', 'interventions') + (wos.length ? ' · WO ' + wos.join(', ') : '') : 'Rien de saisi';
+  return `<div class="day ${open ? 'open' : ''} ${rs.length ? '' : 'empty'}" id="day-${k}">
+    <div class="day-head" role="button" tabindex="0" data-act="toggle-day" data-k="${k}" aria-expanded="${open}">
+      <span class="dh-name"><b>${cap(DAYS[d.getDay()])} ${dnum(d)} ${MONTHS[d.getMonth()]}${isToday ? `<span class="today-pill">Aujourd'hui</span>` : ''}</b><small>${esc(meta)}</small></span>
+      <span class="dh-right">${rs.length ? `<b>${fmtDur(sumDur(rs))}</b>` : ''}${dayStatus(k, rs, open)}</span>
+      <span class="dh-chev">${ic('chev')}</span>
+    </div>
+    ${open ? `<div class="day-body">
+      ${rs.length ? `<div class="items">${rs.map(r => itemRow(r, cm)).join('')}</div>` : ''}
+      <button class="btn btn-primary btn-big" data-act="new" data-k="${k}">${ic('plus')} Créer nouveau compte rendu d'intervention</button>
+      ${rs.length ? `<button class="btn btn-secondary" data-act="export-day" data-k="${k}">${ic('send')} Envoyer la journée au n+1 (PDF)</button>` : ''}
+    </div>` : ''}
+  </div>`;
+}
+function weekCard(monKey, isCurrent, cm) {
+  const mon = fromKey(monKey), wk = isoWeek(mon), fri = keyOf(addDays(mon, 4));
+  const days = []; for (let i = 0; i < 5; i++) days.push(addDays(mon, i));
+  const weekend = false;
+  const rs = S.reports.filter(r => r.date >= monKey && r.date <= fri);
+  const open = isCurrent ? !S.openWeeks.has('!' + monKey) : S.openWeeks.has(monKey);
+  return `<section class="week ${isCurrent ? 'current' : ''}">
+    <button class="wk-head" data-act="toggle-week" data-k="${monKey}" data-cur="${isCurrent ? 1 : 0}" aria-expanded="${open}">
+      <span class="wk-no"><small>Sem.</small><b>${wk.week}</b></span>
+      <span class="wk-dates"><b>Semaine ${wk.week}</b><span>${weekLabel(mon, weekend)}</span></span>
+      <span class="wk-tot"><b>${fmtDur(sumDur(rs))}</b><span>${plural(rs.length, 'interv.', 'interv.')}</span></span>
+    </button>
+    ${open ? `<div class="wk-days">${days.map(d => dayBlock(d, cm)).join('')}</div>
+      <div class="wk-foot"><button class="btn ${S.settings.sendMode === 'week' && rs.length && !S.sent['week:' + monKey] ? 'btn-navy' : 'btn-secondary'}" data-act="export-week" data-k="${monKey}" ${rs.length ? '' : 'disabled'}>${ic('send')} Envoyer le reporting de la semaine</button>${sentBadge('week:' + monKey)}</div>` : ''}
+  </section>`;
+}
+function upcomingRow(monKey, cm) {
+  const mon = fromKey(monKey), wk = isoWeek(mon), fri = keyOf(addDays(mon, 4)), open = S.openWeeks.has(monKey);
+  const rs = S.reports.filter(r => r.date >= monKey && r.date <= fri);
+  const days = []; for (let i = 0; i < 5; i++) days.push(addDays(mon, i));
+  return `<div class="wk-up ${open ? 'open' : ''}">
+    <button class="wk-row" data-act="toggle-week" data-k="${monKey}" data-cur="0" aria-expanded="${open}">
+      <span class="s">S${wk.week}</span><span class="d">${weekLabel(mon, false)}</span><span class="n">${rs.length ? fmtDur(sumDur(rs)) : '—'}</span><span class="dh-chev">${ic('chev')}</span>
+    </button>
+    ${open ? `<div class="wk-days">${days.map(d => dayBlock(d, cm)).join('')}</div>` : ''}
+  </div>`;
+}
+function focusDay(k) {
+  const mon = keyOf(mondayOf(fromKey(k)));
+  if (mon < keyOf(mondayOf(new Date()))) S.showPast = true;
+  S.extraWeeks.add(mon); S.openWeeks.add(mon); S.openWeeks.delete('!' + mon); S.openDays.clear(); S.openDays.add(k); S.focusDay = k;
+}
+function renderHome() {
+  const now = new Date(), curMon = keyOf(mondayOf(now)), cm = cumulMap();
+  const AHEAD = 13; // environ 3 mois
+  const future = []; for (let i = 1; i <= AHEAD; i++) future.push(keyOf(addDays(mondayOf(now), 7 * i)));
+  const past = new Set([keyOf(addDays(mondayOf(now), -7)), keyOf(addDays(mondayOf(now), -14))]);
+  const place = m => { if (m < curMon) past.add(m); else if (m > curMon && !future.includes(m)) future.push(m); };
+  S.reports.forEach(r => place(keyOf(mondayOf(fromKey(r.date)))));
+  S.extraWeeks.forEach(place);
+  future.sort();
+  const pastList = [...past].sort();
+  const lastFri = addDays(fromKey(future[future.length - 1]), 4);
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <div class="tb-title"><b>Reporting ${esc(S.settings.company || 'Cargill')}</b><small>${esc(S.settings.name || 'Comptes rendus')}</small></div>
+  </div></header>
+  <main class="wrap">
+    ${PREVIEW ? `<div class="banner"><span><b>Aperçu de l'appli.</b> Les semaines 39 à 41 sont pré-remplies avec ton reporting actuel, et l'onglet Mes WO contient les 29 work orders de Dimitri (aperçu privé, ne pas partager le lien). Rien de ce que tu fais ici n'arrive sur le téléphone de Dimitri. La dictée, le partage vers Gmail et la lecture des WO en photo ne marchent qu'une fois l'appli installée sur le téléphone.</span></div>` : ''}
+    ${!DB.db && !PREVIEW ? `<div class="banner"><b>Stockage indisponible sur ce navigateur.</b> Les comptes rendus seront perdus en fermant la page. Ouvre l'appli dans Safari ou Chrome (pas en navigation privée).</div>` : ''}
+    <div class="sec-head"><h2>Semaines</h2><button class="chip-btn" data-act="pick-date">${ic('cal')} Aller à une date</button></div>
+    <button type="button" class="past-toggle" data-act="toggle-past" aria-expanded="${!!S.showPast}"><span>${S.showPast ? 'Masquer les semaines passées' : 'Voir les semaines passées'}</span><span class="n">${pastList.length}</span><span class="fd-chev ${S.showPast ? 'up' : ''}">${ic('chev')}</span></button>
+    ${S.showPast ? pastList.map(m => weekCard(m, false, cm)).join('') : ''}
+    ${weekCard(curMon, true, cm)}
+    ${future.map(m => weekCard(m, false, cm)).join('')}
+    <p class="small" style="text-align:center;margin:0">Semaines prévues jusqu'au ${dnum(lastFri)} ${MONTHS[lastFri.getMonth()]} ${lastFri.getFullYear()}.</p>
+    <p class="small" style="text-align:center;margin:4px 0 0">Données enregistrées sur ce téléphone · pense à faire une sauvegarde de temps en temps (Réglages).</p>
+  </main>${tabbar('home')}`;
+  if (S.focusDay) { const el = document.getElementById('day-' + S.focusDay); S.focusDay = null; if (el) el.scrollIntoView({ block: 'start' }); }
+}
+
+/* ---------- Formulaire de compte rendu ---------- */
+let F = null; // brouillon en cours
+const TIME_OPTS = (() => { const a = []; for (let m = 5 * 60; m <= 22 * 60; m += 15) a.push(fromMin(m)); return a; })();
+const DUR_OPTS = (() => { const a = []; for (let m = 15; m <= 12 * 60; m += 15) a.push(m); return a; })();
+const CUM_OPTS = (() => { const a = []; for (let m = 15; m <= 24 * 60; m += 15) a.push(m); for (let m = 24 * 60 + 30; m <= 60 * 60; m += 30) a.push(m); for (let m = 61 * 60; m <= 300 * 60; m += 60) a.push(m); return a; })();
+const timeOptions = sel => `<option value="">—</option>` + TIME_OPTS.map(t => `<option value="${t}" ${t === sel ? 'selected' : ''}>${fmtH(t)}</option>`).join('');
+function fillMinSelect(sel, opts, val, emptyLabel) {
+  const list = val != null && !opts.includes(val) ? [...opts, val].sort((a, b) => a - b) : opts;
+  sel.innerHTML = `<option value="">${emptyLabel}</option>` + list.map(m => `<option value="${m}">${fmtDur(m)}</option>`).join('');
+  sel.value = val == null ? '' : String(val);
+}
+
+async function renderForm(r) {
+  let rec = null;
+  if (r.id) { rec = S.reports.find(x => x.id === r.id); if (!rec) { toast("Ce compte rendu n'existe plus.", 'err'); replaceTo(''); return; } }
+  const date = rec ? rec.date : (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date) ? r.date : workdayKey());
+  if (rec) {
+    F = { ...rec, photos: [...(rec.photos || [])], isNew: false, added: [], removed: [], woRead: null };
+  } else {
+    const prev = reportsOn(date); let lastEnd = prev.length ? prev[prev.length - 1].end : null;
+    if (lastEnd && toMin(lastEnd) >= toMin(S.settings.lunchStart) && toMin(lastEnd) < toMin(S.settings.lunchEnd)) lastEnd = S.settings.lunchEnd; // reprise après la pause
+    const src = r.woRef ? recById(r.woRef) : null;
+    F = { id: uid(), isNew: true, date, start: lastEnd || S.settings.dayStart, end: '', wo: src ? (src.number || '') : '', building: src ? (src.building || '') : '', location: src ? (src.location || '') : '', equipment: src ? (src.equipment || '') : '', request: src ? (src.title || '') : '', comments: '', duration: null, durationManual: false, cumulManual: null, photos: [], woFile: src ? (src.fileId || null) : null, woRef: src ? src.id : null, followUp: false, createdAt: Date.now(), added: [], removed: [], woRead: null };
+  }
+  const draft = await DB.getKV('draft', null);
+  const offerDraft = draft && ((F.isNew && draft.isNew) || (!F.isNew && draft.id === F.id)) && draftHasContent(draft);
+  drawForm(offerDraft ? draft : null);
+}
+function draftHasContent(d) { return !!(d.wo || d.request || d.comments || (d.photos || []).length || d.woFile || d.building); }
+
+const micBtn = (id, label, sm = true) => `<button type="button" class="mic ${sm ? 'sm' : ''}" data-act="mic" data-target="${id}" data-label="${label}" aria-label="${label}">${ic('mic')}</button>`;
+function drawForm(draft) {
+  const f = F, d = fromKey(f.date);
+  const lunch = `${fmtH(S.settings.lunchStart)}–${fmtH(S.settings.lunchEnd)}`;
+  const presets = [
+    { a: S.settings.dayStart, b: S.settings.dayEnd, l: 'Journée' },
+    { a: S.settings.dayStart, b: S.settings.lunchStart, l: 'Matin' },
+    { a: S.settings.lunchEnd, b: S.settings.dayEnd, l: 'Après-midi' }
+  ];
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <button class="icon-btn" data-act="form-cancel" aria-label="Annuler">${ic('x')}</button>
+    <div class="tb-title"><b>${f.isNew ? 'Nouveau compte rendu' : 'Compte rendu'}</b><small>Intervention · ${esc(S.settings.name)}</small></div>
+  </div></header>
+  <main class="wrap">
+    ${draft ? `<div class="banner" id="draftBanner"><span><b>Brouillon non enregistré</b> — ${esc(fmtShort(fromKey(draft.date)))}${draft.wo ? ' · WO ' + esc(draft.wo) : ''}${draft.request ? ' · ' + esc(draft.request.slice(0, 60)) : ''}</span>
+      <div class="btn-row"><button class="btn btn-primary" data-act="draft-resume">Reprendre le brouillon</button><button class="btn btn-secondary" data-act="draft-drop">Repartir de zéro</button></div></div>` : ''}
+    ${f.woRef && recById(f.woRef) ? `<div class="banner"><span>Compte rendu pour le <b>${esc(recById(f.woRef).number ? 'WO ' + recById(f.woRef).number : recById(f.woRef).title)}</b>. S'il reste du travail, coche « Prévoir une autre intervention » en bas : le WO restera dans « à traiter ou à terminer ». Sinon, il passera dans « Work Orders réalisés ».</span></div>` : ''}
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('file')} Work order</h3>
+      <div class="wo-drop">
+        <p>Joins le WO (photo ou PDF) : le n° de WO, le bâtiment, la localisation et le travail demandé se remplissent automatiquement.</p>
+        <div class="btn-row">
+          <label class="btn btn-primary">${ic('cam')} Photographier le WO<input type="file" id="woCam" accept="image/*" capture="environment" hidden></label>
+          <label class="btn btn-secondary">${ic('file')} Fichier PDF<input type="file" id="woPick" accept="application/pdf,image/*" hidden></label>
+        </div>
+        ${PREVIEW && DEMO_WO_B64 ? `<button type="button" class="link" data-act="wo-demo" style="align-self:flex-start">Essayer avec un WO d'exemple (PDF)</button>` : ''}
+        <div id="woStatus"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="fWo">N° work order <span class="read-tag" id="rt-wo" hidden>${ic('check')}lu sur le WO</span></label><input class="inp mono" id="fWo" inputmode="numeric" autocomplete="off" placeholder="418319320" value="${esc(f.wo)}"></div>
+        <div class="field"><label for="fBuilding">Bâtiment <span class="read-tag" id="rt-building" hidden>${ic('check')}lu sur le WO</span></label><input class="inp" id="fBuilding" autocomplete="off" placeholder="Bât. 27" value="${esc(f.building)}"></div>
+      </div>
+      <div id="woHist"></div>
+      <div class="field"><label for="fLocation">Localisation <span class="read-tag" id="rt-location" hidden>${ic('check')}lu sur le WO</span></label><input class="inp" id="fLocation" autocomplete="off" placeholder="ex. quai 3, local chaufferie" value="${esc(f.location)}"></div>
+      <div class="field"><label for="fRequest">Travail demandé <span class="read-tag" id="rt-request" hidden>${ic('check')}lu sur le WO</span></label><textarea class="inp" id="fRequest" rows="2" placeholder="Ce que demande le WO : ex. réparation mortier poteau et sous-face de poutre">${esc(f.request)}</textarea></div>
+      <span class="hint">Ces quatre champs viennent du WO. Corrige-les seulement si la lecture s'est trompée, ou remplis-les si tu n'as pas le WO sous la main.</span>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('cal')} Quand</h3>
+      <div class="field"><span class="lbl">Date</span>
+        <button type="button" class="date-btn" data-act="form-date">${ic('cal')}<span><b id="fDateTxt">${cap(fmtLongY(d))}</b><small id="fDateWk">Semaine ${isoWeek(d).week}</small></span></button></div>
+      <div class="field"><span class="lbl">Horaires</span>
+        <div class="row2">
+          <div class="field"><label for="fStart" class="hint">Début</label><select class="inp mono" id="fStart">${timeOptions(f.start)}</select></div>
+          <div class="field"><label for="fEnd" class="hint">Fin</label><select class="inp mono" id="fEnd">${timeOptions(f.end)}</select></div>
+        </div>
+        <div class="chips" id="presets">${presets.map((p, i) => `<button type="button" class="chip" data-act="preset" data-i="${i}" data-a="${p.a}" data-b="${p.b}"><span>${p.l}</span> ${fmtH(p.a)}–${fmtH(p.b)}</button>`).join('')}</div>
+        <span class="hint">Pause ${lunch} déduite automatiquement.</span>
+      </div>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('mic')} Ton intervention</h3>
+      <div class="field"><label for="fComments">Commentaires</label><div class="mic-wrap"><textarea class="inp" id="fComments" rows="3" placeholder="Ce que tu as fait, constaté, ce qui reste à faire…">${esc(f.comments)}</textarea>${micBtn('fComments', 'Dicter les commentaires', false)}</div></div>
+      <span class="hint">${ic('mic')} Touche le micro pour remplir à la voix.</span>
+      <label class="follow ${f.followUp ? 'on' : ''}" id="followBox"><span><b>Prévoir une autre intervention</b><small>Le WO reste dans « Work Orders à traiter ou à terminer » jusqu'à ce que tu le termines.</small></span><input type="checkbox" id="fFollow" ${f.followUp ? 'checked' : ''}></label>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('cal')} Temps</h3>
+      <div class="row2">
+        <div class="field"><label for="fDuration">Temps passé</label><select class="inp mono" id="fDuration"></select></div>
+        <div class="field"><label for="fCumul">Cumul sur ce WO</label><select class="inp mono" id="fCumul"></select></div>
+      </div>
+      <span class="hint" id="durHint"></span>
+      <span class="hint" id="cumHint"></span>
+    </section>
+
+    <section class="fsec">
+      <h3 class="fsec-title">${ic('cam')} Photos</h3>
+      <div class="photos" id="photoGrid"></div>
+    </section>
+
+    ${f.isNew ? '' : `<div class="danger-zone"><button class="btn btn-danger" data-act="form-delete">${ic('trash')} Supprimer ce compte rendu</button></div>`}
+  </main>
+  <footer class="actionbar"><div class="ab-err" id="formErr" hidden></div><div class="actionbar-in">
+    <button class="btn btn-secondary" data-act="form-save-next">${ic('plus')} Enregistrer + nouveau</button>
+    <button class="btn btn-primary" data-act="form-save">${ic('check')} Enregistrer</button>
+  </div></footer>`;
+  bindForm();
+  refreshCalc(); renderPhotos(); renderWoStatus(f.woFile ? 'attached' : 'none');
+  markPresets();
+}
+
+function bindForm() {
+  const f = F;
+  const txt = { fWo: 'wo', fBuilding: 'building', fRequest: 'request', fComments: 'comments', fLocation: 'location' };
+  for (const id in txt) {
+    const el = $('#' + id); if (!el) continue;
+    el.addEventListener('input', () => {
+      f[txt[id]] = el.value;
+      if (id === 'fWo') debounce('wo', refreshCalc, 250);
+      const rt = $('#rt-' + txt[id]); if (rt) rt.hidden = true;
+      scheduleDraft();
+    });
+  }
+  $('#fFollow').onchange = e => { f.followUp = e.target.checked; $('#followBox').classList.toggle('on', f.followUp); scheduleDraft(); };
+  $('#fStart').onchange = e => { f.start = e.target.value; refreshCalc(); markPresets(); scheduleDraft(); };
+  $('#fEnd').onchange = e => { f.end = e.target.value; refreshCalc(); markPresets(); scheduleDraft(); };
+  $('#fDuration').onchange = e => { f.duration = e.target.value === '' ? null : Number(e.target.value); f.durationManual = true; refreshCalc(); scheduleDraft(); };
+  $('#fCumul').onchange = e => {
+    const v = e.target.value === '' ? null : Number(e.target.value);
+    const h = woHistory(f.wo, f); const auto = (h ? h.prev : 0) + (f.duration || 0);
+    f.cumulManual = v === auto ? null : v; refreshCalc(); scheduleDraft();
+  };
+  $('#woCam').onchange = e => { const file = e.target.files[0]; e.target.value = ''; onWoFile(file); };
+  $('#woPick').onchange = e => { const file = e.target.files[0]; e.target.value = ''; onWoFile(file); };
+}
+function markPresets() { $$('#presets .chip').forEach(c => c.classList.toggle('on', c.dataset.a === F.start && c.dataset.b === F.end)); }
+
+function refreshCalc() {
+  const f = F; if (!f || !$('#fDuration')) return;
+  if (!f.durationManual) f.duration = autoDuration(f.start, f.end);
+  fillMinSelect($('#fDuration'), DUR_OPTS, f.duration, '—');
+  const dh = $('#durHint');
+  if (f.durationManual) dh.innerHTML = `Temps saisi à la main. <button type="button" class="link" data-act="dur-auto">Recalculer d'après les horaires</button>`;
+  else if (f.duration != null) dh.textContent = `Calculé d'après ${fmtRange(f.start, f.end)}${lunchOverlap(f.start, f.end) ? ', pause déduite' : ''}. Tu peux le changer.`;
+  else if (f.start && f.end) dh.textContent = "L'heure de fin doit être après le début.";
+  else dh.textContent = 'Choisis la fin de l\'intervention, ou le temps passé directement.';
+
+  const hist = woHistory(f.wo, f), cs = $('#fCumul'), ch = $('#cumHint'), wh = $('#woHist');
+  if (!hist) {
+    cs.disabled = true; fillMinSelect(cs, CUM_OPTS, null, '—');
+    ch.textContent = 'Le cumul se calcule dès que tu indiques le n° de WO.'; wh.innerHTML = ''; return;
+  }
+  cs.disabled = false;
+  const auto = hist.prev + (f.duration || 0);
+  const val = f.cumulManual != null ? f.cumulManual : auto;
+  fillMinSelect(cs, CUM_OPTS, val || null, '—');
+  if (f.cumulManual != null) ch.innerHTML = `Cumul modifié à la main (calcul auto : ${fmtDur(auto)}). <button type="button" class="link" data-act="cum-auto">Revenir au calcul auto</button>`;
+  else if (hist.before.length) ch.textContent = `${fmtDur(hist.prev)} déjà passées sur ce WO (${plural(hist.before.length, 'intervention', 'interventions')}) + ${fmtDur(f.duration || 0)} ici. Si tu y étais allé avant d'utiliser l'appli, corrige le cumul.`;
+  else ch.textContent = 'Premier passage enregistré sur ce WO. Si tu y étais déjà intervenu avant, choisis le vrai cumul.';
+  if (hist.all.length) {
+    const last = hist.all[hist.all.length - 1];
+    const canFill = (!f.building && last.building) || (!f.request && last.request) || (!f.location && last.location);
+    wh.innerHTML = `<div class="hist"><span><b>WO déjà suivi</b> · ${plural(hist.all.length, 'compte rendu', 'comptes rendus')}, dernier le ${fmtShort(fromKey(last.date))}${last.request ? ' : ' + esc(last.request.slice(0, 70)) : ''}</span>${canFill ? `<button type="button" class="link" data-act="wo-reuse" style="align-self:flex-start">Reprendre bâtiment et description</button>` : ''}</div>`;
+  } else wh.innerHTML = '';
+}
+
+async function renderPhotos() {
+  const g = $('#photoGrid'); if (!g) return;
+  const items = await Promise.all(F.photos.map(async id => ({ id, url: await fileURL(id) })));
+  g.innerHTML = items.filter(x => x.url).map(x => `<div class="ph"><img src="${x.url}" alt="Photo d'intervention"><button type="button" class="rm" data-act="ph-rm" data-id="${x.id}" aria-label="Retirer la photo">${ic('x')}</button></div>`).join('') +
+    `<label class="ph-add">${ic('cam')}Prendre une photo<input type="file" accept="image/*" capture="environment" hidden data-ph="1"></label>
+     <label class="ph-add">${ic('img')}Depuis la galerie<input type="file" accept="image/*" multiple hidden data-ph="1"></label>`;
+  $$('input[data-ph]', g).forEach(inp => inp.onchange = e => { const files = [...e.target.files]; e.target.value = ''; addPhotos(files); });
+}
+
+/* Images */
+async function decodeImage(blob) {
+  if ('createImageBitmap' in window) { try { return await createImageBitmap(blob, { imageOrientation: 'from-image' }); } catch (e) { } }
+  return await new Promise((res, rej) => { const u = URL.createObjectURL(blob); const im = new Image(); im.onload = () => { URL.revokeObjectURL(u); res(im); }; im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('image')); }; im.src = u; });
+}
+async function drawScaled(blob, max) {
+  const im = await decodeImage(blob); const w = im.width || im.naturalWidth, h = im.height || im.naturalHeight;
+  const s = Math.min(1, max / Math.max(w, h)); const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(im, 0, 0, c.width, c.height); if (im.close) im.close();
+  return c;
+}
+async function resizeToBlob(blob, max, q) { const c = await drawScaled(blob, max); return await new Promise(r => c.toBlob(b => r(b || blob), 'image/jpeg', q)); }
+async function resizeToData(blob, max, q) { const c = await drawScaled(blob, max); return { data: c.toDataURL('image/jpeg', q), w: c.width, h: c.height }; }
+
+async function addPhotos(files) {
+  let n = 0;
+  for (const file of files) {
+    if (file.type && !file.type.startsWith('image/')) continue;
+    let blob = file; try { blob = await resizeToBlob(file, 1600, 0.8); } catch (e) { }
+    const id = uid(); await DB.put('files', { id, kind: 'photo', type: blob.type || 'image/jpeg', name: file.name || 'photo.jpg', blob, createdAt: Date.now() });
+    F.photos.push(id); F.added.push(id); n++;
+  }
+  if (n) { renderPhotos(); scheduleDraft(); }
+  else if (files.length) toast("Ce fichier n'est pas une image lisible.", 'err');
+}
+
+/* Brouillon auto (si le téléphone se met en veille en cours de saisie) */
+function scheduleDraft() { debounce('draft', () => { if (F) DB.setKV('draft', { ...F, savedAt: Date.now() }); }, 500); }
+async function clearDraft() { clearTimeout(debTimers.draft); await DB.del('kv', 'draft'); }
+
+/* ---------- Work order : lecture automatique ---------- */
+const scriptLoads = {};
+function loadScript(src) {
+  if (scriptLoads[src]) return scriptLoads[src];
+  scriptLoads[src] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.async = true;
+    s.onload = () => res(); s.onerror = () => { delete scriptLoads[src]; rej(new Error('Chargement impossible : ' + src)); };
+    document.head.appendChild(s);
+  });
+  return scriptLoads[src];
+}
+function renderWoStatus(state, p) {
+  const box = $('#woStatus'); if (!box) return;
+  const f = F;
+  const live = $('.loading', box);
+  if (state === 'reading' && live && p) { live.firstElementChild.textContent = p.label || 'Lecture du work order…'; const bar = $('.progress', live); if (p.v != null) { bar.classList.remove('indet'); bar.firstElementChild.style.width = Math.round(p.v * 100) + '%'; } return; }
+  const chip = async () => {
+    if (!f.woFile) return '';
+    const rec = await DB.get('files', f.woFile); if (!rec) return '';
+    return `<div class="file-chip">${ic('file')}<span class="fc-name">${esc(rec.name)}<small>${rec.type === 'application/pdf' ? 'PDF' : 'Photo'} · ${Math.max(1, Math.round(rec.blob.size / 1024))} Ko</small></span><button type="button" data-act="wo-view">Voir</button><button type="button" data-act="wo-remove">Retirer</button></div>`;
+  };
+  (async () => {
+    let h = await chip();
+    if (state === 'reading') {
+      h += `<div class="loading"><span>${p && p.label ? esc(p.label) : 'Lecture du work order…'}</span><div class="progress ${p && p.v != null ? '' : 'indet'}"><i style="${p && p.v != null ? `width:${Math.round(p.v * 100)}%` : ''}"></i></div></div>`;
+    } else if (state === 'done' && f.woRead) {
+      const L = { wo: 'N° WO', building: 'Bâtiment', location: 'Localisation', request: 'Travail demandé' };
+      const { filled, conflicts, extra } = f.woRead;
+      h += `<div class="found">`;
+      if (filled.length) h += `<span class="ok">${ic('check')} ${plural(filled.length, 'info remplie', 'infos remplies')} : ${filled.map(k => L[k]).join(', ')}. Vérifie d'un coup d'œil.</span>`;
+      else if (!conflicts.length) h += `<span>Je n'ai rien pu lire de fiable sur ce document. Le WO reste joint ; remplis les champs à la main.</span>`;
+      for (const c of conflicts) h += `<div class="conflict"><span>${L[c.k]} sur le WO : <b>${esc(c.v)}</b></span><button type="button" class="link" data-act="wo-use" data-k="${c.k}">Utiliser</button></div>`;
+      if (extra && (extra.priority || extra.requester)) h += `<span class="hint">${extra.priority ? 'Priorité : ' + esc(extra.priority) : ''}${extra.priority && extra.requester ? ' · ' : ''}${extra.requester ? 'Demandeur : ' + esc(extra.requester) : ''}</span>`;
+      h += `</div>`;
+    } else if (state === 'error') {
+      h += `<span class="hint">Lecture impossible (pas de réseau ?). Le WO reste joint ; remplis les champs à la main ou réessaie plus tard. <button type="button" class="link" data-act="wo-reread">Réessayer</button></span>`;
+    } else if (state === 'attached') {
+      h += `<button type="button" class="link" data-act="wo-reread" style="align-self:flex-start">Relire les infos du WO</button>`;
+    }
+    box.innerHTML = h;
+  })();
+}
+
+async function onWoFile(file) {
+  if (!file) return;
+  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+  if (!isPdf && file.type && !file.type.startsWith('image/')) { toast('Choisis une photo ou un PDF du work order.', 'err'); return; }
+  let blob = file;
+  if (!isPdf) { try { blob = await resizeToBlob(file, 2400, 0.86); } catch (e) { } }
+  const id = uid();
+  await DB.put('files', { id, kind: 'wo', type: isPdf ? 'application/pdf' : (blob.type || 'image/jpeg'), name: file.name || (isPdf ? 'work-order.pdf' : 'work-order.jpg'), blob, createdAt: Date.now() });
+  if (F.woFile) { if (F.added.includes(F.woFile)) DB.del('files', F.woFile); else F.removed.push(F.woFile); }
+  F.woFile = id; F.added.push(id); scheduleDraft();
+  await readWo();
+}
+async function readWo() {
+  const f = F; if (!f.woFile) return;
+  const rec = await DB.get('files', f.woFile); if (!rec) return;
+  renderWoStatus('reading', { label: 'Lecture du work order…' });
+  try {
+    let text = '';
+    if (rec.type === 'application/pdf') {
+      text = await pdfText(rec.blob);
+      if (text.replace(/\s/g, '').length < 40) { const img = await pdfFirstPage(rec.blob); text = await ocr(img); }
+    } else text = await ocr(rec.blob);
+    if (F !== f) return;
+    applyFound(parseWO(text));
+    renderWoStatus('done');
+  } catch (e) { console.error(e); if (F === f) renderWoStatus('error'); }
+}
+async function ensurePdfjs() {
+  await loadScript(LIBS.pdfjs);
+  if (PREVIEW) await loadScript(LIBS.pdfjsWorker);
+  const lib = window.pdfjsLib; lib.GlobalWorkerOptions.workerSrc = LIBS.pdfjsWorker; return lib;
+}
+async function pdfText(blob) {
+  const lib = await ensurePdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+  const out = [];
+  for (let p = 1; p <= Math.min(pdf.numPages, 3); p++) {
+    const page = await pdf.getPage(p); const tc = await page.getTextContent(); const rows = [];
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const y = it.transform[5], x = it.transform[4];
+      let row = rows.find(r => Math.abs(r.y - y) < 3); if (!row) { row = { y, items: [] }; rows.push(row); }
+      row.items.push({ x, s: it.str });
+    }
+    rows.sort((a, b) => b.y - a.y);
+    for (const r of rows) out.push(r.items.sort((a, b) => a.x - b.x).map(i => i.s).join(' ').replace(/\s+/g, ' ').trim());
+  }
+  return out.join('\n');
+}
+async function pdfFirstPage(blob) {
+  const lib = await ensurePdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+  const page = await pdf.getPage(1); const vp = page.getViewport({ scale: 2.2 });
+  const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+  await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+  return await new Promise(r => c.toBlob(r, 'image/png'));
+}
+async function ocr(blob) {
+  renderWoStatus('reading', { label: 'Préparation de la lecture…' });
+  await loadScript(LIBS.tesseract);
+  const worker = await Tesseract.createWorker('fra', 1, {
+    logger: m => { if (m.status === 'recognizing text') renderWoStatus('reading', { label: 'Lecture du texte du WO…', v: m.progress }); }
+  });
+  try { const { data } = await worker.recognize(blob); return data.text || ''; } finally { worker.terminate(); }
+}
+function parseWO(raw) {
+  const text = String(raw || '').replace(/\r/g, '').replace(/[ \t]+/g, ' ');
+  const lines = text.split('\n').map(s => s.trim()).filter(Boolean);
+  const out = {};
+  const clean = s => String(s || '').replace(/[|\[\]{}]+/g, ' ').replace(/\s{2,}/g, ' ').replace(/^[^\wÀ-ÿ]+/, '').replace(/[\s.,;:\-–]+$/, '').trim();
+  const sentence = s => { s = clean(s); return s && s === s.toUpperCase() ? s.charAt(0) + s.slice(1).toLowerCase() : s ? s.charAt(0).toUpperCase() + s.slice(1) : s; };
+  const after = re => { for (let i = 0; i < lines.length; i++) { const mm = lines[i].match(re); if (mm) { const v = clean(mm[1] || ''); return v || clean(lines[i + 1] || ''); } } return ''; };
+  // Ligne des valeurs de l'en-tête : « 4 W 418082807 1018807528 1EVB PM01 15.07.2026 … »
+  const valRow = lines.find(l => /\b1E[VY]B\b/i.test(l) && /\bPM[O0]/i.test(l) && /\b4\d{8}\b/.test(l)) || '';
+  const cands = {}; (text.match(/\b4[1-9]\d{7}\b/g) || []).forEach(n => cands[n] = (cands[n] || 0) + 1);
+  const best = Object.entries(cands).sort((a, b) => b[1] - a[1]);
+  const fromRow = (valRow.match(/\b(4\d{8})\b/) || [])[1];
+  out.wo = fromRow || (best.length && (best[0][1] > 1 || best.length === 1) ? best[0][0] : best.length ? best[0][0] : '');
+  if (!out.wo) { const m = text.match(/(?:ordre(?:\s+de\s+travail)?|work\s*order|\bW\.?\s?O\b\.?|\bO\.?T\b\.?)\s*(?:n[°ºo]\.?|no\.?|#)?\s*[:\-]?\s*(\d{6,12})/i); if (m) out.wo = m[1]; }
+  const priority = (valRow.match(/^\D{0,4}([1-9])\b/) || [])[1] || '';
+  // Description (pas « Description de l'opération »), sinon texte long ou opération 0010
+  let desc = after(/(?:^|\s)(?:description(?!\s+de\s)|d[ée]signation|texte\s+court|short\s+text|objet|travail\s+demand[ée])\s*[:\-|]?\s*(.*)$/i);
+  const longTxt = after(/(?:^|\s)texte\s+long\s*[:\-|]?\s*(.*)$/i);
+  if (!desc) { const op = lines.find(l => /F_?PAIN|MECH\s?1/i.test(l) && !/pos\.?\s*trav/i.test(l)); if (op) desc = op.replace(/^\W*0010\W*/, '').replace(/\s*(?:F_?PAIN|MECH\s?1).*$/i, ''); }
+  if (!desc) desc = longTxt;
+  if (desc) out.request = sentence(desc).slice(0, 200);
+  // Poste technique : libellé du type « 1330V|BAT ENTREPOT BAT31 » ou « 1330F|BATI COUR USINE »
+  const lab = (text.match(/\b(BATI?\s+[A-ZÀ-Ý0-9][A-ZÀ-Ý0-9 \-]{2,40})/) || text.match(/\|\s*((?!PM\d)[A-ZÀ-Ý][A-ZÀ-Ý0-9 \-]{3,40})/) || [])[1] || '';
+  if (lab) out.location = sentence(lab.replace(/\s+[A-Z]?$/, ''));
+  else { const ptl = after(/(?:^|\s)poste\s+technique\s*[:\-|]?\s*(.*)$/i); if (ptl && !/^1E[VY]B/i.test(ptl) && !/^infrastructure/i.test(ptl)) out.location = sentence(ptl); }
+  for (const src of [desc, longTxt, lab]) {
+    const b = String(src || '').match(/\b(?:b[âa]t(?:iment|i)?\.?|bt)\s*(\d{1,3})\b/i); if (b) { out.building = 'Bât. ' + b[1]; break; }
+    const t = String(src || '').match(/\bTA\s?(\d)\b/); if (t) { out.building = 'TA' + t[1]; break; }
+  }
+  if (!out.building && lab) out.building = sentence(lab.replace(/^BATI?\s+/, 'Bâti ').replace(/\s+[A-Z]?$/, ''));
+  const requester = (text.match(/\d{2}:\d{2}:\d{2}\s+UTC\s+([^(\n]+?)\s*\(/) || [])[1] || '';
+  for (const k in out) if (!out[k]) delete out[k];
+  out._extra = { priority, requester: clean(requester).slice(0, 60) };
+  return out;
+}
+const MAP_FIELDS = { wo: 'fWo', building: 'fBuilding', location: 'fLocation', request: 'fRequest' };
+const sameText = (a, b) => normWO(a) === normWO(b) || String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+function applyFound(found) {
+  const f = F, filled = [], conflicts = [];
+  for (const k in MAP_FIELDS) {
+    const v = found[k]; if (!v) continue;
+    const cur = (f[k] || '').trim();
+    if (!cur) { f[k] = v; const el = $('#' + MAP_FIELDS[k]); if (el) el.value = v; const rt = $('#rt-' + k); if (rt) rt.hidden = false; filled.push(k); }
+    else if (!sameText(cur, v)) conflicts.push({ k, v });
+  }
+  f.woRead = { filled, conflicts, extra: found._extra };
+  if (found._extra) { if (found._extra.priority) f.priority = found._extra.priority; if (found._extra.requester) f.requester = found._extra.requester; }
+  refreshCalc(); scheduleDraft();
+}
+
+/* ---------- Micro / dictée (tous les champs) ---------- */
+const MIC_FIELDS = { fWo: { key: 'wo', digits: true }, fBuilding: { key: 'building' }, fLocation: { key: 'location' }, fEquipment: { key: 'equipment' }, fRequest: { key: 'request', append: true }, fComments: { key: 'comments', append: true } };
+let REC = null, REC_BTN = null;
+function setMicUI(btn, on) { if (!btn || !btn.isConnected) return; btn.classList.toggle('on', on); btn.innerHTML = ic(on ? 'stop' : 'mic'); btn.setAttribute('aria-label', on ? 'Arrêter la dictée' : btn.dataset.label); }
+function stopMic() { if (REC) { const r = REC, b = REC_BTN; REC = null; REC_BTN = null; try { r.abort(); } catch (e) { } setMicUI(b, false); } }
+function toggleMic(btn) {
+  const id = btn.dataset.target, cfg = MIC_FIELDS[id], el = $('#' + id); if (!cfg || !el) return;
+  const wasSame = REC_BTN === btn; stopMic(); if (wasSame) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('Dictée directe pas dispo ici : touche le micro de ton clavier pour dicter.'); el.focus(); return; }
+  const rec = new SR(); REC = rec; REC_BTN = btn;
+  rec.lang = 'fr-FR'; rec.interimResults = true; rec.continuous = !!cfg.append && !/Android/i.test(navigator.userAgent);
+  const base = cfg.append ? el.value.replace(/\s+$/, '') : ''; let finals = '';
+  rec.onresult = e => {
+    if (REC !== rec) return;
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) { const t = e.results[i][0].transcript; if (e.results[i].isFinal) finals = (finals + ' ' + t.trim()).trim(); else interim += t; }
+    let add = (finals + ' ' + interim).trim();
+    if (cfg.digits) add = add.replace(/[^0-9]/g, ''); else if (add && !base) add = add.charAt(0).toUpperCase() + add.slice(1);
+    el.value = base && add ? base + ' ' + add : (base || add);
+    if (F) F[cfg.key] = el.value;
+    const rt = $('#rt-' + cfg.key); if (rt) rt.hidden = true;
+    if (cfg.key === 'wo') debounce('wo', refreshCalc, 250);
+  };
+  rec.onerror = e => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast('Micro refusé : autorise le micro pour cette appli, ou dicte avec le micro du clavier.', 'err');
+    else if (e.error === 'no-speech') toast("Je n'ai rien entendu, réessaie.");
+    else if (e.error !== 'aborted') toast('Dictée interrompue (' + e.error + ').', 'err');
+  };
+  rec.onend = () => { if (REC === rec) { REC = null; REC_BTN = null; } setMicUI(btn, false); if (F) { F[cfg.key] = el.value; if (cfg.key === 'wo') refreshCalc(); scheduleDraft(); } };
+  try { rec.start(); setMicUI(btn, true); } catch (e) { REC = null; REC_BTN = null; toast('Impossible de lancer la dictée : utilise le micro du clavier.', 'err'); }
+}
+
+/* ---------- Enregistrer / annuler ---------- */
+async function saveForm(next = false) {
+  const f = F, err = $('#formErr');
+  stopMic();
+  for (const [id, k] of Object.entries({ fWo: 'wo', fBuilding: 'building', fLocation: 'location', fEquipment: 'equipment', fRequest: 'request', fComments: 'comments' })) { const el = $('#' + id); if (el) f[k] = el.value; }
+  const problems = [];
+  if (f.start && f.end && toMin(f.end) <= toMin(f.start)) problems.push("L'heure de fin doit être après le début.");
+  if (!f.request.trim() && !f.comments.trim() && !normWO(f.wo)) problems.push('Indique au moins le travail réalisé ou un n° de WO.');
+  if (problems.length) { err.textContent = problems.join(' '); err.hidden = false; toast(problems[0], 'err'); return; }
+  err.hidden = true;
+  const rec = {
+    id: f.id, date: f.date, start: f.start || '', end: f.end || '', wo: f.wo.trim(), building: f.building.trim(), location: f.location.trim(), equipment: f.equipment.trim(),
+    request: f.request.trim(), comments: f.comments.trim(), duration: f.duration, durationManual: !!f.durationManual, cumulManual: f.cumulManual,
+    photos: f.photos, woFile: f.woFile, woRef: f.woRef || null, followUp: !!f.followUp, priority: f.priority || '', requester: f.requester || '', createdAt: f.createdAt || Date.now(), updatedAt: Date.now(), sentAt: f.sentAt || null, sentHow: f.sentHow || null
+  };
+  await DB.put('reports', rec);
+  const i = S.reports.findIndex(x => x.id === rec.id); if (i >= 0) S.reports[i] = rec; else S.reports.push(rec);
+  const trec = await syncRecordAfterSave(rec);
+  for (const id of f.removed) { if (fileInUse(id)) continue; await DB.del('files', id); urlCache.delete(id); }
+  await clearDraft(); F = null;
+  const tail = trec ? (trec.status === 'open' ? ' · WO à terminer' : ' · WO dans « réalisés »') : '';
+  if (next) {
+    toast(`Enregistré. Intervention suivante du ${fmtShort(fromKey(rec.date))}`);
+    replaceTo('cr/nouveau?date=' + rec.date); return;
+  }
+  toast('Compte rendu enregistré' + tail);
+  focusDay(rec.date);
+  if (canGoBack()) history.back(); else replaceTo('');
+}
+async function cancelForm() {
+  const f = F; stopMic();
+  const dirty = f && (f.isNew ? draftHasContent(f) : true);
+  if (f && f.isNew && dirty) { const ok = await confirmSheet({ title: 'Abandonner ce compte rendu ?', text: 'Ce que tu as saisi sera effacé.', ok: 'Abandonner', danger: true }); if (!ok) return; }
+  if (f) for (const id of f.added) if (!fileInUse(id)) await DB.del('files', id);
+  await clearDraft(); F = null;
+  if (f && f.date) focusDay(f.date);
+  back('');
+}
+async function deleteReport() {
+  const f = F;
+  const ok = await confirmSheet({ title: 'Supprimer ce compte rendu ?', text: 'Les photos jointes seront aussi supprimées. Impossible de revenir en arrière.', ok: 'Supprimer', danger: true });
+  if (!ok) return;
+  const rec = S.reports.find(x => x.id === f.id);
+  const files = new Set([...(rec?.photos || []), rec?.woFile, ...f.added].filter(Boolean));
+  await DB.del('reports', f.id); S.reports = S.reports.filter(x => x.id !== f.id);
+  if (rec) await syncRecordAfterDelete(rec);
+  for (const id of files) { if (fileInUse(id)) continue; await DB.del('files', id); urlCache.delete(id); }
+  await clearDraft(); F = null; toast('Compte rendu supprimé');
+  focusDay(f.date);
+  if (canGoBack()) history.back(); else replaceTo('');
+}
+
+/* ---------- PDF ---------- */
+function pdfSafe(s) {
+  return String(s ?? '').replace(/[\u2028\u2029]/g, '\n').replace(/[\u00A0\u202F]/g, ' ').replace(/[\u2018\u2019\u02BC]/g, "'").replace(/[\u201C\u201D]/g, '"')
+    .replace(/[^\n\x20-\x7E\u00A0-\u00FF\u0152\u0153\u0160\u0161\u0178\u017D\u017E\u2013\u2014\u2020\u2021\u2022\u2026\u2030\u20AC\u2122]/g, '');
+}
+function woFilesOf(rs) {
+  const seen = new Set(), out = [];
+  for (const r of rs) { if (!r.woFile) continue; const k = normWO(r.wo) || r.woFile; if (seen.has(k) || seen.has(r.woFile)) continue; seen.add(k); seen.add(r.woFile); out.push({ fileId: r.woFile, wo: r.wo, date: r.date, building: r.building }); }
+  return out;
+}
+function exportCtxWos(ids) {
+  const st = S.settings, who = st.name || 'Dimitri Van Calster', co = st.company || 'Cargill';
+  const recs = ids.map(recById).filter(Boolean), groups = recs.map(rec => ({ rec, rs: reportsOfRec(rec) }));
+  const all = groups.flatMap(g => g.rs), total = sumDur(all), one = recs.length === 1, r0 = recs[0] || {}, num = r0.number || '';
+  const heading = one ? `Compte rendu du WO ${num || r0.title || ''}` : `Compte rendu de ${recs.length} work orders`;
+  const subject = one ? `Compte rendu WO ${num}${r0.building ? ' – ' + r0.building : ''} – ${who}` : `Compte rendu de ${recs.length} work orders – ${who}`;
+  const filename = `CR_${co}_${one ? 'WO' + (normWO(num) || 'sans-numero') : recs.length + 'WO_' + todayKey()}_${who}`.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9_-]+/g, '_') + '.pdf';
+  const hello = st.managerName ? `Bonjour ${st.managerName.split(' ')[0]},` : 'Bonjour,';
+  const lines = groups.map(({ rec, rs }) => `• ${rec.number ? 'WO ' + rec.number + ' · ' : ''}${rec.building ? rec.building + ' · ' : ''}${(rec.title || 'Work order').replace(/\s+/g, ' ').slice(0, 90)} : ${statusOf(rec).label.toLowerCase()}${rs.length ? ` (${plural(rs.length, 'intervention', 'interventions')}, ${fmtDur(sumDur(rs))})` : ''}`);
+  const woItems = [], seen = new Set();
+  for (const { rec, rs } of groups) { const fid = rec.fileId || (rs.find(r => r.woFile) || {}).woFile; if (!fid || seen.has(fid)) continue; seen.add(fid); woItems.push({ fileId: fid, wo: rec.number, date: rec.woDate || '', building: rec.building }); }
+  const nWO = st.pdfWO ? woItems.length : 0;
+  const body = `${hello}\n\nCi-joint le compte rendu ${one ? 'du work order ' + num : 'de ' + recs.length + ' work orders'}.${nWO ? ` ${nWO > 1 ? 'Les work orders sont joints' : 'Le work order est joint'} en fin de PDF.` : ''}\n\n${lines.join('\n')}${total ? `\n\nTemps total : ${fmtDur(total)}.` : ''}\n\nCordialement,\n${who}`;
+  const d0 = new Date();
+  return { scope: 'wos', key: ids, recs, groups, all, total, d0, dN: d0, wk: isoWeek(d0).week, filename, heading, subject, body, nWO, woItems, one, num };
+}
+function exportCtx(scope, key) {
+  if (scope === 'wos') return exportCtxWos(key);
+  const st = S.settings;
+  let days = [];
+  if (scope === 'day') days = [{ d: fromKey(key), k: key, rs: reportsOn(key) }];
+  else if (scope === 'wo') {
+    const rs = S.reports.filter(r => normWO(r.wo) === key).sort(cmpReports), by = new Map();
+    for (const r of rs) { if (!by.has(r.date)) by.set(r.date, []); by.get(r.date).push(r); }
+    days = [...by].map(([k, rs]) => ({ d: fromKey(k), k, rs }));
+    if (!days.length) days = [{ d: new Date(), k: todayKey(), rs: [] }];
+  }
+  else { const mon = fromKey(key); for (let i = 0; i < 5; i++) { const d = addDays(mon, i), k = keyOf(d); days.push({ d, k, rs: reportsOn(k) }); } }
+  const all = days.flatMap(x => x.rs), total = sumDur(all), d0 = days[0].d, dN = days[days.length - 1].d, wk = isoWeek(d0).week;
+  const weekend = days.some(x => x.d.getDay() === 0 || x.d.getDay() === 6);
+  const who = st.name || 'Dimitri Van Calster', co = st.company || 'Cargill';
+  const woLabel = scope === 'wo' && all.length ? all[all.length - 1].wo.trim() : '';
+  const woBld = scope === 'wo' ? ([...all].reverse().find(r => r.building) || {}).building || '' : '';
+  const fileDate = scope === 'day' ? key : scope === 'wo' ? `WO${key}` : `S${pad(wk)}-${d0.getFullYear()}`;
+  const filename = `${scope === 'day' ? 'CR' : scope === 'wo' ? 'Suivi' : 'Reporting'}_${co}_${fileDate}_${who}`.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9_-]+/g, '_') + '.pdf';
+  const span = keyOf(d0) === keyOf(dN) ? `le ${fmtShort(d0)}` : `du ${fmtShort(d0)} au ${fmtShort(dN)}`;
+  const heading = scope === 'day' ? `Compte rendu du ${fmtLong(d0)}` : scope === 'wo' ? `Suivi du WO ${woLabel}` : `Reporting semaine ${wk}`;
+  const subject = scope === 'day'
+    ? `Compte rendu d'intervention – ${cap(fmtLongY(d0))} (S${wk}) – ${who}`
+    : scope === 'wo' ? `Suivi WO ${woLabel}${woBld ? ' – ' + woBld : ''} – ${who}`
+    : `Reporting ${co} – Semaine ${wk} (${weekLabel(d0, weekend)}) – ${who}`;
+  const hello = st.managerName ? `Bonjour ${st.managerName.split(' ')[0]},` : 'Bonjour,';
+  const cm = cumulMap();
+  const lines = all.map(r => `• ${scope !== 'day' ? fmtShort(fromKey(r.date)) + ' · ' : ''}${fmtRange(r.start, r.end)}${r.wo && scope !== 'wo' ? ' · WO ' + r.wo : ''}${r.building && scope !== 'wo' ? ' · ' + r.building : ''} · ${(r.request || r.comments || 'Intervention').replace(/\s+/g, ' ').slice(0, 90)} (${fmtDur(r.duration)}${r.wo ? ', cumul WO ' + fmtDur(cm[r.id]) : ''})`);
+  const woItems = woFilesOf(all), nWO = st.pdfWO ? woItems.length : 0;
+  const intro = scope === 'day' ? `mon compte rendu d'intervention du ${fmtLongY(d0)}` : scope === 'wo' ? `le suivi du WO ${woLabel}${woBld ? ' (' + woBld + ')' : ''}, ${span}` : `mon reporting de la semaine ${wk}, ${weekLabel(d0, weekend)}`;
+  const tot = scope === 'day' ? 'de la journée' : scope === 'wo' ? 'passé sur ce WO' : 'de la semaine';
+  const body = `${hello}\n\nCi-joint ${intro}.${nWO ? ` ${nWO > 1 ? 'Les work orders sont joints' : 'Le work order est joint'} en fin de PDF.` : ''}\n\n${lines.join('\n')}\n\nTotal ${tot} : ${fmtDur(total)}.\n\nCordialement,\n${who}`;
+  return { scope, key, days, all, total, wk, d0, dN, span, weekend, woLabel, woBld, filename, heading, subject, body, nWO, woItems };
+}
+async function buildPDF(ctx) {
+  await loadScript(LIBS.jspdf); await loadScript(LIBS.autotable);
+  const { jsPDF } = window.jspdf; const st = S.settings;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const W = 297, H = 210, M = 12, NAVY = [29, 53, 87], SOFT = [220, 229, 240], INK = [19, 32, 48], MUT = [93, 109, 126];
+  const co = (st.company || 'Cargill').toUpperCase(), who = st.name || 'Dimitri Van Calster';
+  const title = ctx.scope === 'wos' ? (ctx.one ? `COMPTE RENDU — WORK ORDER ${ctx.num}`.trim() : `COMPTE RENDU — ${ctx.recs.length} WORK ORDERS`) : ctx.scope === 'day' ? `COMPTE RENDU D'INTERVENTION — ${fmtLongY(ctx.d0).toUpperCase()}` : ctx.scope === 'wo' ? `SUIVI WORK ORDER ${ctx.woLabel}${ctx.woBld ? ' — ' + ctx.woBld.toUpperCase() : ''}` : `REPORTING ${co} — SEMAINE N° ${ctx.wk}`;
+  const period = ctx.scope === 'wos' ? `Établi le ${fmtLongY(new Date())}` : ctx.scope === 'day' ? `${cap(fmtLongY(ctx.d0))} · semaine ${ctx.wk}` : ctx.scope === 'wo' ? `Interventions ${ctx.span}` : `Période suivie : ${weekLabel(ctx.d0, ctx.weekend)}`;
+  const sub = `Intervenant : ${who}${st.site ? ' · Site : ' + st.site : ''} · ${period} · journée habituelle ${fmtH(st.dayStart)}–${fmtH(st.dayEnd)}, pause ${fmtH(st.lunchStart)}–${fmtH(st.lunchEnd)}`;
+  const band = (small) => {
+    doc.setFillColor(...NAVY); doc.rect(0, 0, W, small ? 14 : 22, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(small ? 11 : 15.5);
+    doc.text(pdfSafe(title), M, small ? 9 : 11.5);
+    if (!small) { doc.setFont('helvetica', 'normal'); doc.setFontSize(8.6); doc.text(pdfSafe(sub), M, 17.5, { maxWidth: W - 2 * M }); }
+    doc.setFillColor(242, 169, 0); doc.rect(0, small ? 14 : 22, W, 1.1, 'F');
+  };
+  band(false);
+  const cm = cumulMap();
+  const wos = [...new Set(ctx.all.map(r => r.wo).filter(Boolean))];
+  doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+  doc.text(pdfSafe(ctx.scope === 'wos' && !ctx.all.length ? 'Temps : à préciser' : `Total : ${fmtDec(ctx.total)} h`), M, 31);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...MUT);
+  const summary = ctx.scope === 'wos' ? `${plural(ctx.recs.length, 'work order', 'work orders')} · ${plural(ctx.all.length, 'intervention saisie', 'interventions saisies')}` : `${plural(ctx.all.length, 'intervention', 'interventions')}${wos.length ? ` · ${plural(wos.length, 'WO', 'WO')} : ${wos.join(', ')}` : ''}`;
+  doc.text(pdfSafe(summary), M + 40, 31, { maxWidth: W - 2 * M - 40 });
+
+  const body = []; const sty = { fillColor: SOFT, fontStyle: 'bold', textColor: INK };
+  const rowOf = (r, dateCell) => { const nPh = (r.photos || []).length; return [dateCell, pdfSafe(fmtRange(r.start, r.end)), pdfSafe(r.wo ? 'WO ' + r.wo : ''), pdfSafe([r.building, r.location].filter(Boolean).join('\n')), pdfSafe(r.request), pdfSafe(r.comments), fmtDec(r.duration), r.wo ? fmtDec(cm[r.id]) : '', nPh ? String(nPh) : '']; };
+  const dfull = k => { const d = fromKey(k); return `${fmtShort(d)}/${d.getFullYear()}`; };
+  if (ctx.scope === 'wos') for (const { rec, rs } of ctx.groups) {
+    body.push([{ content: pdfSafe([rec.number ? 'WO ' + rec.number : 'Work order', rec.title, rec.building, rec.priority ? 'Priorité ' + rec.priority : '', statusOf(rec).label].filter(Boolean).join(' · ')), colSpan: 9, styles: sty }]);
+    if (!rs.length) body.push([pdfSafe(rec.doneDate ? dfull(rec.doneDate) : 'À préciser'), 'À préciser', pdfSafe(rec.number ? 'WO ' + rec.number : ''), pdfSafe([rec.building, rec.location].filter(Boolean).join('\n')), pdfSafe(rec.title), pdfSafe(statusOf(rec).label), '', '', '']);
+    else rs.forEach(r => body.push(rowOf(r, pdfSafe(dfull(r.date)))));
+  }
+  else for (const day of ctx.days) {
+    const dl = `${fmtShort(day.d)}/${day.d.getFullYear()}`;
+    if (!day.rs.length) { body.push([{ content: pdfSafe(dl), styles: { textColor: MUT } }, { content: 'Aucune intervention saisie', colSpan: 8, styles: { textColor: MUT, fontStyle: 'italic' } }]); continue; }
+    day.rs.forEach((r, i) => body.push(rowOf(r, i === 0 ? pdfSafe(dl) : '')));
+    if (ctx.scope !== 'wo') body.push([{ content: 'TOTAL JOUR (h)', colSpan: 6, styles: { ...sty, halign: 'right' } }, { content: fmtDec(sumDur(day.rs)), styles: { ...sty, halign: 'right' } }, { content: '', colSpan: 2, styles: sty }]);
+  }
+  if (ctx.scope !== 'day' && (ctx.scope !== 'wos' || ctx.total)) body.push([{ content: ctx.scope === 'wos' ? 'TOTAL (h)' : ctx.scope === 'wo' ? 'TOTAL WO (h)' : 'TOTAL SEMAINE (h)', colSpan: 6, styles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', halign: 'right' } }, { content: fmtDec(ctx.total), styles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', halign: 'right' } }, { content: '', colSpan: 2, styles: { fillColor: NAVY } }]);
+  doc.autoTable({
+    startY: 35, head: [['Date', 'Horaires', 'N° WO', 'Bâtiment / lieu', 'Intervention', 'Observations', 'Temps (h)', 'Cumul WO (h)', 'Photos']], body,
+    theme: 'grid', margin: { left: M, right: M, top: 20, bottom: 14 },
+    styles: { font: 'helvetica', fontSize: 8.4, cellPadding: 1.8, lineColor: [205, 214, 224], lineWidth: 0.2, textColor: INK, valign: 'top', overflow: 'linebreak' },
+    headStyles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold', fontSize: 8.2, valign: 'middle' },
+    columnStyles: { 0: { cellWidth: 22 }, 1: { cellWidth: 19 }, 2: { cellWidth: 27 }, 3: { cellWidth: 24 }, 4: { cellWidth: 62 }, 5: { cellWidth: 67 }, 6: { cellWidth: 17, halign: 'right' }, 7: { cellWidth: 19, halign: 'right' }, 8: { cellWidth: 16, halign: 'center' } },
+    didDrawPage: data => { if (data.pageNumber > 1) band(true); }
+  });
+
+  // Annexe photos
+  const withPh = ctx.all.filter(r => (r.photos || []).length);
+  if (st.pdfPhotos && withPh.length) {
+    doc.addPage(); band(true);
+    let y = 22; const colW = (W - 2 * M - 12) / 3, maxH = 62;
+    doc.setTextColor(...INK); doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text('PHOTOS DES INTERVENTIONS', M, y); y += 6;
+    for (const r of withPh) {
+      const imgs = [];
+      for (const id of r.photos) { const f = await DB.get('files', id); if (!f) continue; try { imgs.push(await resizeToData(f.blob, 1000, 0.72)); } catch (e) { } }
+      if (!imgs.length) continue;
+      if (y + 8 + maxH > H - 14) { doc.addPage(); band(true); y = 22; }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(...INK);
+      doc.text(pdfSafe(`${fmtShort(fromKey(r.date))} · ${fmtRange(r.start, r.end)}${r.wo ? ' · WO ' + r.wo : ''}${r.building ? ' · ' + r.building : ''} — ${(r.request || r.comments || '').replace(/\s+/g, ' ').slice(0, 110)}`), M, y, { maxWidth: W - 2 * M });
+      y += 4;
+      for (let i = 0; i < imgs.length; i++) {
+        const col = i % 3;
+        if (col === 0 && i > 0) y += maxH + 4;
+        if (col === 0 && y + maxH > H - 14) { doc.addPage(); band(true); y = 22; }
+        const im = imgs[i], s = Math.min(colW / im.w, maxH / im.h), w = im.w * s, h = im.h * s;
+        doc.addImage(im.data, 'JPEG', M + col * (colW + 6), y, w, h, undefined, 'FAST');
+      }
+      y += maxH + 9;
+    }
+  }
+  const n = doc.getNumberOfPages(), now = new Date();
+  for (let p = 1; p <= n; p++) {
+    doc.setPage(p); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.8); doc.setTextColor(...MUT);
+    doc.text(pdfSafe(`${who} · ${st.company || 'Cargill'} · généré le ${fmtNum(now)} à ${pad(now.getHours())}h${pad(now.getMinutes())}`), M, H - 6);
+    doc.text(`page ${p}`, W - M, H - 6, { align: 'right' });
+  }
+  return doc.output('blob');
+}
+
+async function appendWorkOrders(blob, items) {
+  if (!items || !items.length) return { blob, count: 0 };
+  await loadScript(LIBS.pdflib);
+  const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+  const out = await PDFDocument.load(await blob.arrayBuffer());
+  const font = await out.embedFont(StandardFonts.HelveticaBold);
+  const A4 = [595.28, 841.89], M = 34; let count = 0;
+  for (const r of items) {
+    const f = await DB.get('files', r.fileId); if (!f) continue;
+    const label = pdfSafe(`WORK ORDER${r.wo ? ' ' + r.wo : ''}${r.date ? ' · ' + fmtShort(fromKey(r.date)) : ''}${r.building ? ' · ' + r.building : ''}`);
+    try {
+      if (f.type === 'application/pdf') {
+        const src = await PDFDocument.load(await f.blob.arrayBuffer(), { ignoreEncryption: true });
+        const pages = await out.copyPages(src, src.getPageIndices());
+        pages.forEach(pg => out.addPage(pg)); count++;
+      } else {
+        const im = await resizeToData(f.blob, 2000, 0.85);
+        const bin = atob(im.data.split(',')[1]); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+        const img = await out.embedJpg(u8); const page = out.addPage(A4);
+        page.drawText(label, { x: M, y: A4[1] - M - 6, size: 11, font, color: rgb(29 / 255, 53 / 255, 87 / 255) });
+        const maxW = A4[0] - 2 * M, maxH = A4[1] - 2 * M - 26, sc = Math.min(maxW / im.w, maxH / im.h);
+        page.drawImage(img, { x: M + (maxW - im.w * sc) / 2, y: M + (maxH - im.h * sc) / 2, width: im.w * sc, height: im.h * sc });
+        count++;
+      }
+    } catch (e) { console.error('WO non joint', e); }
+  }
+  const bytes = await out.save();
+  return { blob: new Blob([bytes], { type: 'application/pdf' }), count };
+}
+
+/* ---------- Visionneuse (WO, photos) ---------- */
+async function openFileViewer(id, title) {
+  const rec = await DB.get('files', id); if (!rec) { toast('Fichier introuvable.', 'err'); return; }
+  openSheet(`<div class="sh-head"><div><h3>${esc(title)}</h3><p>${esc(rec.name || '')}</p></div><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div>
+    <div class="pdf-pages" id="docPages"><div class="loading"><span>Affichage…</span><div class="progress indet"><i></i></div></div></div>`);
+  const box = () => $('#docPages');
+  try {
+    if (rec.type === 'application/pdf') { const pages = await renderPdfPages(rec.blob); if (box()) box().innerHTML = pages.map((u, i) => `<img src="${u}" alt="Page ${i + 1}">`).join(''); }
+    else { const u = await fileURL(id); if (box()) box().innerHTML = `<img src="${u}" alt="${esc(title)}">`; }
+  } catch (e) { console.error(e); if (box()) box().innerHTML = '<span class="hint">Affichage impossible pour ce fichier.</span>'; }
+}
+
+/* ---------- Envoi par mail ---------- */
+const b64FromBytes = bytes => { let s = ''; const C = 0x8000; for (let i = 0; i < bytes.length; i += C) s += String.fromCharCode.apply(null, bytes.subarray(i, i + C)); return btoa(s); };
+const wrap76 = s => s.replace(/.{1,76}/g, '$&\r\n');
+const Gmail = {
+  client: null, token: null, exp: 0,
+  enabled() { return !!CONFIG.googleClientId; },
+  async init() {
+    if (this.client || !this.enabled()) return;
+    await loadScript(LIBS.gis);
+    this.client = google.accounts.oauth2.initTokenClient({ client_id: CONFIG.googleClientId, scope: 'https://www.googleapis.com/auth/gmail.send', callback: () => { } });
+  },
+  valid() { return this.token && Date.now() < this.exp; },
+  requestToken() {
+    return new Promise((res, rej) => {
+      if (!this.client) return rej(new Error('Gmail pas prêt, réessaie dans une seconde.'));
+      this.client.callback = r => { if (r.error) return rej(new Error(r.error_description || r.error)); this.token = r.access_token; this.exp = Date.now() + ((r.expires_in || 3600) - 60) * 1000; S.settings.gmailGranted = true; saveSettings(); res(this.token); };
+      this.client.error_callback = e => rej(new Error(e && e.type === 'popup_closed' ? 'Connexion Gmail annulée.' : 'Connexion Gmail impossible.'));
+      this.client.requestAccessToken({ prompt: S.settings.gmailGranted ? '' : 'consent' });
+    });
+  },
+  async send({ to, subject, text, pdf, filename }) {
+    const enc = new TextEncoder(), B = 'cr_' + uid();
+    const subj = '=?UTF-8?B?' + b64FromBytes(enc.encode(subject)) + '?=';
+    const pdfB64 = b64FromBytes(new Uint8Array(await pdf.arrayBuffer()));
+    const mime = [`To: ${to}`, `Subject: ${subj}`, 'MIME-Version: 1.0', `Content-Type: multipart/mixed; boundary="${B}"`, '', `--${B}`, 'Content-Type: text/plain; charset="UTF-8"', 'Content-Transfer-Encoding: base64', '', wrap76(b64FromBytes(enc.encode(text))),
+      `--${B}`, `Content-Type: application/pdf; name="${filename}"`, `Content-Disposition: attachment; filename="${filename}"`, 'Content-Transfer-Encoding: base64', '', wrap76(pdfB64), `--${B}--`, ''].join('\r\n');
+    const r = await fetch('https://gmail.googleapis.com/upload/gmail/v1/users/me/messages/send?uploadType=media', { method: 'POST', headers: { Authorization: 'Bearer ' + this.token, 'Content-Type': 'message/rfc822' }, body: mime });
+    if (r.status === 401) { this.token = null; throw Object.assign(new Error('Session Gmail expirée : touche à nouveau Envoyer.'), { code: 401 }); }
+    if (!r.ok) { let msg = ''; try { msg = (await r.json()).error.message; } catch (e) { } throw new Error('Gmail a refusé l\'envoi' + (msg ? ' : ' + msg : '.')); }
+    return true;
+  }
+};
+const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim());
+
+let EXP = null;
+async function openExport(scope, key) {
+  const ctx = exportCtx(scope, key);
+  if (scope === 'wos' ? !ctx.recs.length : !ctx.all.length) { toast(scope === 'wos' ? 'Aucun work order sélectionné.' : scope === 'day' ? 'Aucune intervention ce jour-là.' : scope === 'wo' ? 'Aucune intervention sur ce WO.' : 'Aucune intervention cette semaine.'); return; }
+  EXP = { ctx, blob: null };
+  openSheet(exportHead(ctx) + `<div id="expBody"><div class="loading"><span>Préparation du PDF…</span><div class="progress indet"><i></i></div></div></div>`);
+  if (Gmail.enabled()) Gmail.init().catch(() => { });
+  try {
+    let blob = await buildPDF(ctx); if (!EXP || EXP.ctx !== ctx) return;
+    EXP.woCount = 0;
+    if (S.settings.pdfWO) { try { const r = await appendWorkOrders(blob, ctx.woItems); blob = r.blob; EXP.woCount = r.count; } catch (e) { console.error(e); toast("Les WO n'ont pas pu être joints au PDF.", 'err'); } }
+    if (!EXP || EXP.ctx !== ctx) return;
+    EXP.blob = blob; EXP.draft = null;
+    renderExport();
+  } catch (e) {
+    console.error(e);
+    const b = $('#expBody'); if (b) b.innerHTML = `<div class="banner"><b>Le PDF n'a pas pu être créé.</b> Il faut du réseau la première fois pour charger l'outil PDF. Vérifie la connexion et réessaie.<button class="btn btn-secondary" data-act="exp-retry">Réessayer</button></div>`;
+  }
+}
+function exportHead(ctx) { return `<div class="sh-head"><div><h3>${esc(cap(ctx.heading))}</h3><p>${ctx.scope === 'wos' ? plural(ctx.recs.length, 'work order', 'work orders') + (ctx.all.length ? ' · ' + fmtDur(ctx.total) : '') : plural(ctx.all.length, 'intervention', 'interventions') + ' · ' + fmtDur(ctx.total)}</p></div><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div>`; }
+function showExportSheet() { openSheet(exportHead(EXP.ctx) + '<div id="expBody"></div>'); renderExport(); }
+async function renderPdfPages(blob) {
+  const lib = await ensurePdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise; const out = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p); const vp0 = page.getViewport({ scale: 1 }); const vp = page.getViewport({ scale: 1400 / vp0.width });
+    const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise; out.push(c.toDataURL('image/jpeg', 0.86));
+  }
+  return out;
+}
+async function showPdfViewer() {
+  if ($('#eTo')) EXP.draft = expValues();
+  openSheet(`<div class="sh-head"><div><h3>Aperçu du PDF</h3><p>${esc(EXP.ctx.filename)}</p></div><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div>
+    <div class="pdf-pages" id="pdfPages"><div class="loading"><span>Affichage des pages…</span><div class="progress indet"><i></i></div></div></div>
+    <button class="btn btn-primary" data-act="exp-back">${ic('back')} Retour à l'envoi</button>`);
+  try { const pages = await renderPdfPages(EXP.blob); const box = $('#pdfPages'); if (box) box.innerHTML = pages.map((u, i) => `<img src="${u}" alt="Page ${i + 1} du PDF">`).join(''); }
+  catch (e) { console.error(e); const box = $('#pdfPages'); if (box) box.innerHTML = '<span class="hint">Aperçu indisponible ici. Télécharge le PDF pour le voir.</span>'; }
+}
+async function saveFile(blob, name) {
+  if (window.claude && typeof window.claude.use === 'function') {
+    const d = await window.claude.use('downloads').catch(() => null);
+    if (d) { try { await d.save({ filename: name, data: blob }); return true; } catch (e) { if (e && e.code === 'declined') return false; } }
+  }
+  downloadBlob(blob, name); return true;
+}
+function renderExport() {
+  const { ctx, blob } = EXP, st = S.settings, b = $('#expBody'); if (!b) return;
+  const gm = Gmail.enabled();
+  b.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">
+    <div class="file-chip">${ic('file')}<span class="fc-name">${esc(ctx.filename)}<small>PDF · ${Math.max(1, Math.round(blob.size / 1024))} Ko${EXP.woCount ? ` · ${plural(EXP.woCount, 'WO joint', 'WO joints')}` : ''}</small></span><button type="button" data-act="exp-view">Aperçu</button></div>
+    <div class="field"><label for="eTo">Destinataire (ton n+1)</label><input class="inp" id="eTo" type="email" inputmode="email" autocomplete="email" placeholder="prenom.nom@cargill.com" value="${esc(EXP.draft ? EXP.draft.to : st.managerEmail)}"></div>
+    <div class="field"><label for="eSubj">Objet</label><input class="inp" id="eSubj" value="${esc(EXP.draft ? EXP.draft.subject : ctx.subject)}"></div>
+    <div class="field"><label for="eBody">Message</label><textarea class="inp" id="eBody" rows="7">${esc(EXP.draft ? EXP.draft.text : ctx.body)}</textarea></div>
+    ${gm ? `<button class="btn btn-primary btn-big" data-act="exp-gmail">${ic('send')} Envoyer depuis Gmail</button>
+      <button class="btn btn-secondary" data-act="exp-share">Partager autrement</button>`
+      : `<button class="btn btn-primary btn-big" data-act="exp-share">${ic('send')} Envoyer par mail</button>
+      <span class="hint">Choisis <b>Gmail</b> dans la liste : le PDF, l'objet et le message sont déjà dedans${st.managerEmail ? `, il ne reste qu'à mettre <b>${esc(st.managerEmail)}</b> en destinataire` : ''}.</span>`}
+    <button class="btn btn-secondary" data-act="exp-dl">${ic('dl')} Télécharger le PDF</button>
+  </div>`;
+  $('#eTo').addEventListener('change', e => { const v = e.target.value.trim(); if (!v || isEmail(v)) { S.settings.managerEmail = v; saveSettings(); } });
+}
+function expValues() { return { to: $('#eTo').value.trim(), subject: $('#eSubj').value.trim() || EXP.ctx.subject, text: $('#eBody').value }; }
+async function markSent(how) {
+  const at = Date.now(), c = EXP.ctx;
+  if (c.scope === 'wos') { for (const rec of c.recs) { rec.sentAt = at; await putRec(rec); } S.selMode = false; S.sel.clear(); }
+  else { S.sent[c.scope + ':' + c.key] = { at, how }; await DB.setKV('sent', S.sent); }
+  for (const r of c.all) { r.sentAt = at; r.sentHow = how; await DB.put('reports', r); }
+}
+function downloadBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); }
+async function expShare() {
+  const { to, subject, text } = expValues();
+  const file = new File([EXP.blob], EXP.ctx.filename, { type: 'application/pdf' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: subject, text }); await markSent('share'); closeSheet(); toast('Partagé'); refreshAfterSend(); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  await saveFile(EXP.blob, EXP.ctx.filename);
+  const u = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+  window.open(u, '_blank', 'noopener');
+  toast('PDF téléchargé : glisse-le dans le mail Gmail qui vient de s\'ouvrir.');
+}
+async function expGmail(btn) {
+  const { to, subject, text } = expValues();
+  if (!isEmail(to)) { toast("Indique l'adresse mail de ton n+1.", 'err'); $('#eTo').focus(); return; }
+  S.settings.managerEmail = to; saveSettings();
+  btn.disabled = true; btn.innerHTML = 'Envoi en cours…';
+  try {
+    if (!Gmail.valid()) await Gmail.requestToken();
+    await Gmail.send({ to, subject, text, pdf: EXP.blob, filename: EXP.ctx.filename });
+    await markSent('gmail'); closeSheet(); toast('Envoyé à ' + to); refreshAfterSend();
+  } catch (e) { toast(e.message || 'Envoi impossible.', 'err'); btn.disabled = false; btn.innerHTML = `${ic('send')} Envoyer depuis Gmail`; }
+}
+function refreshAfterSend() {
+  const r = S.route, y = window.scrollY; if (!r) return;
+  if (r.name === 'home' || r.name === 'day') renderHome(); else if (r.name === 'wo') renderWoHome(); else if (r.name === 'wo-sent') renderWoList(); else if (r.name === 'wo-detail') renderWoDetail(r.w); else if (r.name === 'wo-folder') renderWoFolder(r.kind); else if (r.name === 'wo-rec') renderRecDetail(r.id);
+  window.scrollTo(0, y);
+}
+
+/* ---------- Mes WO ---------- */
+const fold = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const fmtDM = ts => { const d = new Date(ts); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`; };
+function woIndex() {
+  const cm = cumulMap(), by = new Map();
+  for (const r of S.reports) { const w = normWO(r.wo); if (!w) continue; if (!by.has(w)) by.set(w, []); by.get(w).push(r); }
+  return [...by].map(([w, rs]) => {
+    rs.sort(cmpReports); const rev = [...rs].reverse(), last = rs[rs.length - 1];
+    const pick = k => (rev.find(r => r[k]) || {})[k] || '';
+    const sent = rs.filter(r => r.sentAt);
+    return { w, label: last.wo.trim(), rs, first: rs[0].date, last: last.date, building: pick('building'), request: pick('request'), location: pick('location'), equipment: pick('equipment'),
+      cumul: cm[last.id], unsent: rs.length - sent.length, lastSent: sent.length ? Math.max(...sent.map(r => r.sentAt)) : null, file: pick('woFile'), photos: rs.flatMap(r => r.photos || []) };
+  }).sort((a, b) => a.last < b.last ? 1 : a.last > b.last ? -1 : 0);
+}
+function woChips(x) {
+  let h = '';
+  if (x.lastSent) h += `<span class="st st-ok">${ic('check')} Envoyé le ${fmtDM(x.lastSent)}</span>`;
+  if (x.unsent) h += `<span class="st st-todo">${x.lastSent ? plural(x.unsent, 'intervention à envoyer', 'interventions à envoyer') : 'Pas encore envoyé'}</span>`;
+  return h;
+}
+function woRange(x) { return x.first === x.last ? `le ${fmtShort(fromKey(x.first))}` : `du ${fmtShort(fromKey(x.first))} au ${fmtShort(fromKey(x.last))}`; }
+function woCard(x) {
+  return `<button class="woc" data-act="wo-open" data-w="${esc(x.w)}">
+    <span class="woc-top"><span class="wo-tag">WO ${esc(x.label)}</span><span class="woc-cum">${fmtDur(x.cumul)}</span></span>
+    ${x.request ? `<span class="woc-title">${esc(x.request)}</span>` : ''}
+    <span class="woc-sub">${[x.building, plural(x.rs.length, 'intervention', 'interventions'), woRange(x), x.file ? 'WO joint' : ''].filter(Boolean).map(esc).join(' · ')}</span>
+    <span class="chips-row">${woChips(x)}</span></button>`;
+}
+function renderWoList() {
+  const sent = woIndex().filter(x => x.lastSent);
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in"><button class="icon-btn" data-act="back" data-h="wo" aria-label="Retour">${ic('back')}</button><div class="tb-title"><b>WO envoyés</b><small>${plural(sent.length, 'WO envoyé', 'WO envoyés')} à ton n+1</small></div></div></header>
+  <main class="wrap">
+    <div class="search">${ic('search')}<input class="inp" id="woSearch" type="search" placeholder="N° de WO, bâtiment, mot…" value="${esc(S.woQuery || '')}" autocomplete="off"></div>
+    <div class="wo-list" id="woList"></div>
+  </main>`;
+  const draw = () => {
+    const q = fold(S.woQuery || '').trim();
+    let list = sent;
+    if (q) list = list.filter(x => fold([x.w, x.label, x.building, x.request, x.location, ...x.rs.map(r => r.comments)].join(' ')).includes(q));
+    $('#woList').innerHTML = list.length ? list.map(woCard).join('') :
+      `<div class="empty-box"><b>${q ? 'Aucun WO ne correspond' : "Aucun WO envoyé pour l'instant"}</b>${q ? 'Essaie un autre mot ou un autre numéro.' : 'Ils apparaissent ici dès que tu envoies une journée, une semaine ou un WO à ton n+1.'}</div>`;
+  };
+  draw();
+  $('#woSearch').addEventListener('input', e => { S.woQuery = e.target.value; draw(); });
+}
+async function renderWoDetail(w) {
+  const x = woIndex().find(i => i.w === w);
+  if (!x) { toast('Ce WO n\'a plus d\'intervention.', 'err'); replaceTo('wo'); return; }
+  const cm = cumulMap();
+  const rows = [...x.rs].reverse().map(r => `<button class="it" data-act="edit" data-id="${r.id}">
+      <span class="it-time">${fmtShort(fromKey(r.date))}<br>${esc(fmtRange(r.start, r.end))}</span>
+      <span class="it-main"><span class="it-title">${esc(r.comments || r.request || 'Intervention')}</span><span class="it-sub">cumul ${fmtDur(cm[r.id])}${(r.photos || []).length ? ' · ' + plural(r.photos.length, 'photo', 'photos') : ''}${r.sentAt ? ` · envoyé le ${fmtDM(r.sentAt)}` : ' · pas encore envoyé'}</span></span>
+      <span class="it-dur">${fmtDur(r.duration)}</span></button>`).join('');
+  const fileRec = x.file ? await DB.get('files', x.file) : null;
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <button class="icon-btn" data-act="back" data-h="wo/envoyes" aria-label="Retour">${ic('back')}</button>
+    <div class="tb-title"><b>WO ${esc(x.label)}</b><small>${esc(x.building || 'Work order')}</small></div>
+  </div></header>
+  <main class="wrap">
+    <section class="fsec">
+      ${x.request ? `<h3 class="fsec-title" style="text-transform:none;letter-spacing:0;font-family:var(--f-body);font-size:18px">${esc(x.request)}</h3>` : ''}
+      <div class="stats"><span class="stat"><b>${fmtDur(x.cumul)}</b><span>cumul</span></span><span class="stat"><b>${x.rs.length}</b><span>${x.rs.length > 1 ? 'interventions' : 'intervention'}</span></span><span class="stat"><b>${fmtDM(fromKey(x.last).getTime())}</b><span>dernière</span></span></div>
+      ${(x.location || x.equipment || x.building) ? `<dl class="kv">${x.building ? `<dt>Bâtiment</dt><dd>${esc(x.building)}</dd>` : ''}${x.location ? `<dt>Localisation</dt><dd>${esc(x.location)}</dd>` : ''}<dt>Période</dt><dd>${esc(woRange(x))}</dd></dl>` : ''}
+      <span class="chips-row">${woChips(x)}</span>
+    </section>
+    <section class="fsec"><h3 class="fsec-title">${ic('file')} Document du WO</h3>
+      ${fileRec ? `<div class="file-chip">${ic('file')}<span class="fc-name">${esc(fileRec.name)}<small>${fileRec.type === 'application/pdf' ? 'PDF' : 'Photo'} · ${Math.max(1, Math.round(fileRec.blob.size / 1024))} Ko</small></span><button type="button" data-act="view-file" data-id="${x.file}" data-t="WO ${esc(x.label)}">Voir</button></div>`
+        : `<span class="hint">Aucun document joint. Tu peux l'ajouter en ouvrant une des interventions ci-dessous.</span>`}
+    </section>
+    <section class="fsec"><h3 class="fsec-title">${ic('cal')} Interventions</h3><div class="items">${rows}</div></section>
+    ${x.photos.length ? `<section class="fsec"><h3 class="fsec-title">${ic('cam')} Photos</h3><div class="thumbs" id="woThumbs"></div></section>` : ''}
+    <button class="btn btn-primary btn-big" data-act="export-wo" data-k="${esc(x.w)}">${ic('send')} Envoyer le suivi de ce WO (PDF)</button>
+  </main>`;
+  if (x.photos.length) {
+    const urls = await Promise.all(x.photos.map(async id => ({ id, u: await fileURL(id) })));
+    const box = $('#woThumbs'); if (box) box.innerHTML = urls.filter(p => p.u).map(p => `<button type="button" data-act="view-file" data-id="${p.id}" data-t="Photo"><img src="${p.u}" alt="Photo d'intervention"></button>`).join('');
+  }
+}
+
+/* ---------- Mes WO : dossiers ---------- */
+const FOLDER = {
+  afaire: { title: 'Work Orders à traiter ou à terminer', short: 'À traiter ou à terminer', test: w => w.status !== 'done' },
+  realises: { title: 'Work Orders réalisés', short: 'Réalisés', test: w => w.status === 'done' }
+};
+const collator = new Intl.Collator('fr', { sensitivity: 'base', numeric: true });
+const recLabel = w => w.title || w.number || '';
+function renderWoHome() {
+  const open = S.wos.filter(FOLDER.afaire.test), done = S.wos.filter(FOLDER.realises.test);
+  const nNew = open.filter(w => statusOf(w).key === 'new').length, nStarted = open.length - nNew;
+  const doneUnsent = done.filter(w => !recSentAt(w)).length, sentCount = woIndex().filter(x => x.lastSent).length;
+  const folder = (h, cls, icon, title, sub, n) => `<button class="folder" data-act="go" data-h="${h}"><span class="fd-ic ${cls}">${ic(icon)}</span><span class="fd-txt"><b>${title}</b><small>${sub}</small></span><span class="fd-n">${n}</span><span class="fd-chev">${ic('chev')}</span></button>`;
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in"><div class="tb-title"><b>Mes work orders</b><small>${plural(S.wos.length, 'WO classé', 'WO classés')}</small></div></div></header>
+  <main class="wrap">
+    <div class="sec-head"><h2>Anciens work orders</h2></div>
+    <div class="folders">
+      ${folder('wo/afaire', 'todo', 'folder', 'Work Orders à traiter ou à terminer', open.length ? [nNew ? nNew + ' à traiter' : '', nStarted ? nStarted + ' à terminer' : ''].filter(Boolean).join(' · ') : 'Rien en attente', open.length)}
+      ${folder('wo/realises', 'done', 'folder', 'Work Orders réalisés', done.length ? (doneUnsent ? plural(doneUnsent, 'compte rendu à envoyer', 'comptes rendus à envoyer') : 'Tous envoyés') : "Aucun pour l'instant", done.length)}
+    </div>
+    <div class="sec-head"><h2>Historique</h2></div>
+    <div class="folders">${folder('wo/envoyes', '', 'send', 'WO envoyés', 'Tous les WO déjà envoyés à ton n+1', sentCount)}</div>
+    <label class="btn btn-ghost" style="align-self:center">${ic('dl')} Importer un fichier de work orders<input type="file" id="woImport" accept="application/json,.json" hidden></label>
+  </main>${tabbar('wo')}`;
+  $('#woImport').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) restoreBackup(f); };
+}
+const wfDefault = () => ({ q: '', prio: [], bld: [], type: [], from: '', to: '', sent: 'all', origin: 'all', sort: 'az', stage: 'all' });
+function wfState(kind) { const st = S.wf[kind] || (S.wf[kind] = wfDefault()); if (!st.type) st.type = []; if (!st.stage) st.stage = 'all'; return st; }
+function recDates(w) { return [w.woDate, w.plannedEnd, w.givenDate, w.doneDate, ...reportsOfRec(w).map(r => r.date)].filter(Boolean); }
+function recText(w) { return fold([w.number, w.title, w.building, w.location, w.priority, w.type, w.requester, w.assignedTo, w.ptech, w.longText, (w.operations || []).join(' '), w.note, ...reportsOfRec(w).map(r => r.comments + ' ' + r.request)].join(' ')); }
+function folderList(kind, st = wfState(kind)) {
+  const q = fold(st.q).trim();
+  let list = S.wos.filter(FOLDER[kind].test);
+  if (q) list = list.filter(w => recText(w).includes(q));
+  if (st.prio.length) list = list.filter(w => st.prio.includes(w.priority || '—'));
+  if (st.bld.length) list = list.filter(w => st.bld.includes(w.building || '—'));
+  if (st.type.length) list = list.filter(w => st.type.includes(w.type || '—'));
+  if (st.stage && st.stage !== 'all') list = list.filter(w => statusOf(w).key === st.stage);
+  if (st.from || st.to) list = list.filter(w => recDates(w).some(d => (!st.from || d >= st.from) && (!st.to || d <= st.to)));
+  if (st.sent !== 'all') list = list.filter(w => (st.sent === 'sent') === !!recSentAt(w));
+  if (st.origin !== 'all') list = list.filter(w => (st.origin === 'import') === (w.source === 'import'));
+  if (st.sort === 'num') list.sort((a, b) => collator.compare(a.number || '~', b.number || '~'));
+  else if (st.sort === 'date') list.sort((a, b) => (b.woDate || '').localeCompare(a.woDate || '') || collator.compare(recLabel(a), recLabel(b)));
+  else list.sort((a, b) => collator.compare(recLabel(a), recLabel(b)));
+  return list;
+}
+function activeFilters(st) {
+  const out = [];
+  st.prio.forEach(v => out.push({ k: 'prio', v, label: v === '—' ? 'Sans priorité' : 'Priorité ' + v }));
+  st.bld.forEach(v => out.push({ k: 'bld', v, label: v === '—' ? 'Bâtiment non précisé' : v }));
+  st.type.forEach(v => out.push({ k: 'type', v, label: v === '—' ? 'Type non précisé' : v }));
+  if (st.from || st.to) out.push({ k: 'date', label: st.from && st.to ? `Du ${fmtNum(fromKey(st.from))} au ${fmtNum(fromKey(st.to))}` : st.from ? `Depuis le ${fmtNum(fromKey(st.from))}` : `Jusqu'au ${fmtNum(fromKey(st.to))}` });
+  if (st.sent !== 'all') out.push({ k: 'sent', label: st.sent === 'sent' ? 'Envoyés' : 'Pas encore envoyés' });
+  if (st.origin !== 'all') out.push({ k: 'origin', label: st.origin === 'import' ? 'Anciens WO' : 'Nouveaux WO' });
+  return out;
+}
+function recSentChip(w) { const t = recSentAt(w); return t ? `<span class="st st-ok">${ic('check')} Envoyé le ${fmtDM(t)}</span>` : `<span class="st st-muted">Pas encore envoyé</span>`; }
+function recCard(w) {
+  const rs = reportsOfRec(w), stt = statusOf(w), on = S.sel.has(w.id);
+  const sub = [w.building, w.location, w.woDate ? 'prévu le ' + fmtNum(fromKey(w.woDate)) : ''].filter(Boolean).map(esc).join(' · ');
+  return `<div class="woc rec s-${stt.key} ${S.selMode && on ? 'picked' : ''}" role="button" tabindex="0" data-act="rec-open" data-id="${esc(w.id)}">
+    <span class="woc-top">${S.selMode ? `<span class="ck ${on ? 'on' : ''}" aria-hidden="true">${ic('check')}</span>` : ''}<span class="wo-tag">${w.number ? 'WO ' + esc(w.number) : 'Sans n°'}</span>${w.priority ? `<span class="st ${prioCls(w.priority)}">Priorité ${esc(w.priority)}</span>` : ''}<span class="woc-cum">${rs.length ? fmtDur(sumDur(rs)) : ''}</span></span>
+    <span class="woc-title">${esc(w.title || 'Work order')}</span>
+    ${sub ? `<span class="woc-sub">${sub}</span>` : ''}
+    ${w.note ? `<span class="woc-note">Note : ${esc(w.note)}</span>` : ''}
+    <span class="chips-row"><span class="st ${stt.cls}">${stt.label}</span>${rs.length ? `<span class="st st-muted">${plural(rs.length, 'intervention', 'interventions')}</span>` : ''}${recSentChip(w)}${w.source === 'import' ? '<span class="st st-info">Ancien</span>' : ''}</span>
+  </div>`;
+}
+function renderWoFolder(kind) {
+  const def = FOLDER[kind]; if (!def) { replaceTo('wo'); return; }
+  const st = wfState(kind), total = S.wos.filter(def.test).length, af = activeFilters(st);
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <button class="icon-btn" data-act="back" data-h="wo" aria-label="Retour">${ic('back')}</button>
+    <div class="tb-title"><b>${def.short}</b><small id="fdCount"></small></div>
+  </div></header>
+  <main class="wrap">
+    <h2 class="page-h">${def.title}</h2>
+    <div class="search">${ic('search')}<input class="inp" id="fdSearch" type="search" placeholder="Mot clé, n° de WO, bâtiment…" value="${esc(st.q)}" autocomplete="off"></div>
+    <div class="tools">
+      <button type="button" class="chip-btn ${af.length ? 'on' : ''}" data-act="filters" data-k="${kind}">${ic('sliders')} Filtres${af.length ? ` (${af.length})` : ''}</button>
+      <label><span class="sr">Trier par</span><select id="fdSort" class="chip-btn">${[['az', 'Ordre alphabétique'], ['num', 'N° de WO'], ['date', 'Date du WO']].map(([v, l]) => `<option value="${v}" ${st.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    </div>
+    ${kind === 'afaire' ? (() => { const all = S.wos.filter(def.test), nNew = all.filter(w => statusOf(w).key === 'new').length, nSt = all.length - nNew; return `<div class="legend" role="group" aria-label="Afficher">
+      <button type="button" class="lg new ${st.stage === 'new' ? 'on' : ''}" data-act="stage" data-v="new" aria-pressed="${st.stage === 'new'}"><i></i><span><b>À traiter</b><small>pas encore commencé</small></span><span class="n">${nNew}</span></button>
+      <button type="button" class="lg started ${st.stage === 'started' ? 'on' : ''}" data-act="stage" data-v="started" aria-pressed="${st.stage === 'started'}"><i></i><span><b>À terminer</b><small>commencé ou en attente</small></span><span class="n">${nSt}</span></button>
+    </div>`; })() : ''}
+    ${af.length ? `<div class="chips">${af.map((f, i) => `<button type="button" class="chip on" data-act="f-rm" data-k="${kind}" data-i="${i}" aria-label="Retirer le filtre ${esc(f.label)}"><span>${esc(f.label)}</span> ×</button>`).join('')}</div>` : ''}
+    ${S.selMode ? `<div class="sel-bar"><span id="selInfo"></span><button type="button" class="link" data-act="sel-all" id="selAllBtn"></button></div>` : ''}
+    <div class="wo-list" id="fdList"></div>
+  </main>
+  <footer class="actionbar"><div class="actionbar-in">
+    ${S.selMode ? `<button class="btn btn-ghost" data-act="sel-cancel" data-k="${kind}">Annuler</button><button class="btn btn-primary" data-act="sel-send" id="selSend">${ic('send')} Envoyer</button>`
+      : `<button class="btn btn-secondary" data-act="sel-start" data-k="${kind}">${ic('check')} Choisir</button><button class="btn btn-navy" data-act="send-shown" id="sendShown">${ic('send')} Tout envoyer</button>`}
+  </div></footer>`;
+  const draw = () => {
+    const list = folderList(kind);
+    S.shown = list.map(w => w.id);
+    $('#fdCount').textContent = list.length === total ? plural(total, 'work order', 'work orders') : `${list.length} sur ${total}`;
+    $('#fdList').innerHTML = list.length ? list.map(recCard).join('')
+      : `<div class="empty-box"><b>${total ? 'Aucun WO ne correspond' : kind === 'afaire' ? 'Rien à traiter pour l\'instant' : 'Aucun WO réalisé pour l\'instant'}</b>${total ? 'Change le mot clé ou retire un filtre.' : kind === 'afaire' ? 'Les anciens WO importés et ceux où tu as coché « Prévoir une autre intervention » arrivent ici.' : 'Les WO terminés arrivent ici.'}</div>`;
+    const ss = $('#sendShown'); if (ss) { ss.disabled = !list.length; ss.innerHTML = `${ic('send')} Tout envoyer (${list.length})`; }
+    updateSel();
+  };
+  draw();
+  $('#fdSearch').addEventListener('input', e => { st.q = e.target.value; draw(); });
+  $('#fdSort').onchange = e => { st.sort = e.target.value; draw(); };
+}
+function updateSel() {
+  if (!S.selMode) return;
+  const vis = S.shown.filter(id => S.sel.has(id));
+  const info = $('#selInfo'); if (info) info.textContent = vis.length ? plural(vis.length, 'WO sélectionné', 'WO sélectionnés') : 'Touche les WO à envoyer';
+  const all = $('#selAllBtn'); if (all) all.textContent = S.shown.length && vis.length === S.shown.length ? 'Tout désélectionner' : 'Tout sélectionner';
+  const b = $('#selSend'); if (b) { b.disabled = !vis.length; b.innerHTML = `${ic('send')} Envoyer${vis.length ? ' (' + vis.length + ')' : ''}`; }
+  $$('.woc.rec[data-id]').forEach(c => { const on = S.sel.has(c.dataset.id); c.classList.toggle('picked', on); const ck = $('.ck', c); if (ck) ck.classList.toggle('on', on); });
+}
+function openFilters(kind) {
+  const st = wfState(kind), base = S.wos.filter(FOLDER[kind].test);
+  const prios = [...new Set(base.map(w => w.priority || '—'))].sort(collator.compare);
+  const blds = [...new Set(base.map(w => w.building || '—'))].sort(collator.compare);
+  const types = [...new Set(base.map(w => w.type || '—'))].sort(collator.compare);
+  const tmp = JSON.parse(JSON.stringify(st));
+  const el = openSheet(`<div class="sh-head"><h3>Filtres</h3><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div><div id="fBody" class="set-list"></div>
+    <div class="btn-row"><button class="btn btn-secondary" id="fClear">Tout effacer</button><button class="btn btn-primary" id="fApply">Afficher</button></div>`);
+  const count = () => { const n = folderList(kind, tmp).length; $('#fApply', el).textContent = n ? `Afficher ${plural(n, 'WO', 'WO')}` : 'Aucun résultat'; };
+  const drawF = () => {
+    const chipset = (key, vals, lab) => vals.map(v => `<button type="button" class="chip ${tmp[key].includes(v) ? 'on' : ''}" data-fk="${key}" data-fv="${esc(v)}"><span>${esc(lab(v))}</span></button>`).join('');
+    const seg = (key, opts) => `<div class="seg-ctl" style="grid-template-columns:repeat(${opts.length},1fr)">${opts.map(([v, l]) => `<button type="button" class="${tmp[key] === v ? 'on' : ''}" data-fs="${key}" data-fv="${v}">${l}</button>`).join('')}</div>`;
+    $('#fBody', el).innerHTML = `
+      ${prios.length && !(prios.length === 1 && prios[0] === '—') ? `<div class="field"><span class="lbl">Priorité</span><div class="chips">${chipset('prio', prios, v => v === '—' ? 'Sans priorité' : /^\d$/.test(v) ? 'Priorité ' + v : v)}</div></div>` : ''}
+      ${blds.length ? `<div class="field"><span class="lbl">Bâtiment</span><div class="chips">${chipset('bld', blds, v => v === '—' ? 'Non précisé' : v)}</div></div>` : ''}
+      ${types.length && !(types.length === 1 && types[0] === '—') ? `<div class="field"><span class="lbl">Type de demande</span><div class="chips">${chipset('type', types, v => v === '—' ? 'Non précisé' : v)}</div></div>` : ''}
+      <div class="field"><span class="lbl">Date (du WO ou d'intervention)</span><div class="row2"><div class="field"><label class="hint" for="fFrom">Du</label><input class="inp" type="date" id="fFrom" value="${tmp.from}"></div><div class="field"><label class="hint" for="fTo">Au</label><input class="inp" type="date" id="fTo" value="${tmp.to}"></div></div></div>
+      <div class="field"><span class="lbl">Envoi au n+1</span>${seg('sent', [['all', 'Tous'], ['sent', 'Envoyés'], ['unsent', 'Pas envoyés']])}</div>
+      <div class="field"><span class="lbl">Origine</span>${seg('origin', [['all', 'Tous'], ['import', 'Anciens'], ['manual', 'Nouveaux']])}</div>`;
+    $('#fFrom', el).onchange = e => { tmp.from = e.target.value; count(); };
+    $('#fTo', el).onchange = e => { tmp.to = e.target.value; count(); };
+    count();
+  };
+  $('#fBody', el).addEventListener('click', e => {
+    const c = e.target.closest('[data-fk]'); if (c) { const k = c.dataset.fk, v = c.dataset.fv; tmp[k] = tmp[k].includes(v) ? tmp[k].filter(x => x !== v) : [...tmp[k], v]; drawF(); return; }
+    const sg = e.target.closest('[data-fs]'); if (sg) { tmp[sg.dataset.fs] = sg.dataset.fv; drawF(); }
+  });
+  $('#fClear', el).onclick = () => { Object.assign(tmp, wfDefault(), { q: tmp.q, sort: tmp.sort }); drawF(); };
+  $('#fApply', el).onclick = () => { Object.assign(st, tmp); closeSheet(); renderWoFolder(kind); };
+  drawF();
+}
+async function renderRecDetail(id) {
+  const w = recById(id); if (!w) { toast("Ce work order n'existe plus.", 'err'); replaceTo('wo'); return; }
+  const rs = reportsOfRec(w), stt = statusOf(w), cm = cumulMap();
+  const fileRec = w.fileId ? await DB.get('files', w.fileId) : null;
+  const planned = w.woDate ? fmtNum(fromKey(w.woDate)) + (w.plannedEnd && w.plannedEnd !== w.woDate ? ' → ' + fmtNum(fromKey(w.plannedEnd)) : '') : '';
+  const kv = [['N° WO', w.number], ['Bâtiment', w.building], ['Localisation', w.location], ['Poste technique', w.ptech], ['Type', w.type], ['Demandeur', w.requester], ['Attribué à', w.assignedTo], ['Prévu', planned], ['Remis le', w.givenDate && fmtNum(fromKey(w.givenDate))], ['Réalisé le', w.status === 'done' && w.doneDate && fmtNum(fromKey(w.doneDate))]].filter(x => x[1]);
+  const ops = w.operations || [];
+  const rows = rs.slice().reverse().map(r => `<button class="it" data-act="edit" data-id="${r.id}"><span class="it-time">${fmtShort(fromKey(r.date))}<br>${esc(fmtRange(r.start, r.end))}</span><span class="it-main"><span class="it-title">${esc(r.comments || r.request || 'Intervention')}</span><span class="it-sub">${[r.wo ? 'cumul ' + fmtDur(cm[r.id]) : '', r.followUp ? 'autre intervention prévue' : '', r.sentAt ? 'envoyé le ' + fmtDM(r.sentAt) : 'pas encore envoyé'].filter(Boolean).join(' · ')}</span></span><span class="it-dur">${fmtDur(r.duration)}</span></button>`).join('');
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <button class="icon-btn" data-act="back" data-h="${w.status === 'done' ? 'wo/realises' : 'wo/afaire'}" aria-label="Retour">${ic('back')}</button>
+    <div class="tb-title"><b>${w.number ? 'WO ' + esc(w.number) : 'Work order'}</b><small>${w.status === 'done' ? 'Work Orders réalisés' : 'Work Orders à traiter ou à terminer'}</small></div>
+  </div></header>
+  <main class="wrap">
+    <section class="fsec">
+      <h3 class="rec-title">${esc(w.title || 'Work order')}</h3>
+      <span class="chips-row"><span class="st ${stt.cls}">${stt.label}</span>${w.priority ? `<span class="st ${prioCls(w.priority)}">Priorité ${esc(w.priority)}</span>` : ''}${recSentChip(w)}${w.source === 'import' ? '<span class="st st-info">Ancien WO</span>' : ''}</span>
+      ${kv.length ? `<dl class="kv">${kv.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
+      ${w.note ? `<div class="hand"><span class="lbl">Notes sur le WO</span><p>${esc(w.note)}</p></div>` : ''}
+      <button class="btn btn-secondary" data-act="rec-edit" data-id="${esc(w.id)}">${ic('sliders')} Modifier les infos du WO</button>
+    </section>
+    ${w.longText || ops.length ? `<section class="fsec"><h3 class="fsec-title">${ic('file')} Demande</h3>${w.longText ? `<p class="longtext">${esc(w.longText)}</p>` : ''}${ops.length ? `<ul class="ops">${ops.map(o => `<li>${esc(o)}</li>`).join('')}</ul>` : ''}</section>` : ''}
+    <section class="fsec"><h3 class="fsec-title">${ic('file')} Document du WO</h3>
+      ${fileRec ? `<div class="file-chip">${ic('file')}<span class="fc-name">${esc(fileRec.name)}<small>${fileRec.type === 'application/pdf' ? 'PDF' : 'Photo'} · ${Math.max(1, Math.round(fileRec.blob.size / 1024))} Ko</small></span><button type="button" data-act="view-file" data-id="${w.fileId}" data-t="${w.number ? 'WO ' + esc(w.number) : 'Work order'}">Voir</button></div>`
+        : `<span class="hint">Aucun document joint à ce WO.</span>`}
+    </section>
+    <section class="fsec"><h3 class="fsec-title">${ic('cal')} Comptes rendus d'intervention</h3>
+      ${rs.length ? `<div class="items">${rows}</div>` : `<span class="hint">${w.status === 'done' ? "Aucun compte rendu saisi. Tu peux l'envoyer tel quel (date et horaires « À préciser »), ou créer le compte rendu pour indiquer la date, les horaires et le temps passé." : "Aucune intervention saisie pour l'instant."}</span>`}
+      <button class="btn btn-primary btn-big" data-act="rec-new-cr" data-id="${esc(w.id)}">${ic('plus')} ${rs.length ? 'Ajouter une intervention' : 'Créer le compte rendu'}</button>
+    </section>
+    <button class="btn btn-navy btn-big" data-act="rec-send" data-id="${esc(w.id)}">${ic('send')} Envoyer le compte rendu de ce WO</button>
+    <div class="btn-row stack">
+      <button class="btn btn-secondary" data-act="rec-status" data-id="${esc(w.id)}">${w.status === 'done' ? 'Remettre dans « à traiter ou à terminer »' : `${ic('check')} Marquer comme réalisé`}</button>
+      <button class="btn btn-danger" data-act="rec-delete" data-id="${esc(w.id)}">${ic('trash')} Supprimer ce WO</button>
+    </div>
+  </main>`;
+}
+function openRecEdit(id) {
+  const w = recById(id); if (!w) return;
+  const prios = [...new Set(S.wos.map(x => x.priority).filter(Boolean))].sort(collator.compare);
+  const v = k => esc(w[k] || '');
+  const el = openSheet(`<div class="sh-head"><h3>Modifier le WO</h3><button class="icon-btn" data-act="sheet-close" aria-label="Fermer">${ic('x')}</button></div>
+    <div class="set-list">
+      <div class="row2"><div class="field"><label for="rNum">N° WO</label><input class="inp mono" id="rNum" inputmode="numeric" value="${v('number')}"></div><div class="field"><label for="rPrio">Priorité</label><input class="inp" id="rPrio" list="prioList" value="${v('priority')}"><datalist id="prioList">${prios.map(p => `<option value="${esc(p)}"></option>`).join('')}</datalist></div></div>
+      <div class="field"><label for="rTitle">Travail demandé</label><textarea class="inp" id="rTitle" rows="2">${v('title')}</textarea></div>
+      <div class="row2"><div class="field"><label for="rBld">Bâtiment</label><input class="inp" id="rBld" value="${v('building')}"></div><div class="field"><label for="rLoc">Localisation</label><input class="inp" id="rLoc" value="${v('location')}"></div></div>
+      <div class="row2"><div class="field"><label for="rDate">Date du WO</label><input class="inp" type="date" id="rDate" value="${v('woDate')}"></div><div class="field"><label for="rDone">Réalisé le</label><input class="inp" type="date" id="rDone" value="${v('doneDate')}"></div></div>
+      <div class="field"><span class="lbl">État</span><div class="seg-ctl" id="rState" style="grid-template-columns:repeat(3,1fr)">${[['new', 'À traiter'], ['started', 'À terminer'], ['done', 'Réalisé']].map(([k, l]) => `<button type="button" data-v="${k}" class="${statusOf(w).key === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+      <div class="field"><label for="rNote">Notes sur le WO</label><textarea class="inp" id="rNote" rows="2">${v('note')}</textarea></div>
+      <div class="btn-row"><button class="btn btn-secondary" data-act="sheet-close">Annuler</button><button class="btn btn-primary" id="rSave">${ic('check')} Enregistrer</button></div>
+    </div>`);
+  $('#rState', el).onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; $$('#rState button', el).forEach(x => x.classList.toggle('on', x === b)); };
+  $('#rSave', el).onclick = async () => {
+    const stv = ($('#rState .on', el) || {}).dataset?.v;
+    if (stv === 'done') w.status = 'done'; else if (stv) { w.status = 'open'; w.stage = stv; }
+    const linked = reportsOfRec(w);
+    const g = id => $('#' + id, el).value.trim();
+    Object.assign(w, { number: g('rNum'), priority: g('rPrio'), title: g('rTitle'), building: g('rBld'), location: g('rLoc'), woDate: g('rDate'), doneDate: g('rDone'), note: g('rNote') });
+    for (const r of linked) if (r.woRef !== w.id) { r.woRef = w.id; await DB.put('reports', r); }
+    await putRec(w); closeSheet(); toast('WO mis à jour'); renderRecDetail(w.id);
+  };
+}
+
+/* ---------- Réglages ---------- */
+function renderSettings() {
+  const st = S.settings;
+  const inp = (k, label, attrs = '') => `<div class="field"><label for="s_${k}">${label}</label><input class="inp" id="s_${k}" data-set="${k}" value="${esc(st[k])}" ${attrs}></div>`;
+  const tsel = (k, label) => `<div class="field"><label for="s_${k}">${label}</label><select class="inp mono" id="s_${k}" data-set="${k}">${TIME_OPTS.map(t => `<option value="${t}" ${t === st[k] ? 'selected' : ''}>${fmtH(t)}</option>`).join('')}</select></div>`;
+  $('#app').innerHTML = `
+  <header class="topbar"><div class="topbar-in">
+    <div class="tb-title"><b>Réglages</b><small>Reporting ${esc(st.company)}</small></div>
+  </div></header>
+  <main class="wrap">
+    <section class="fsec"><h3 class="fsec-title">Toi</h3>
+      ${inp('name', 'Nom affiché sur les comptes rendus', 'autocomplete="name"')}
+      <div class="row2">${inp('company', 'Société')}${inp('site', 'Site (facultatif)', 'placeholder="ex. usine de …"')}</div>
+    </section>
+    <section class="fsec"><h3 class="fsec-title">Ton n+1</h3>
+      ${inp('managerName', 'Nom', 'placeholder="Prénom Nom"')}
+      ${inp('managerEmail', 'Adresse mail', 'type="email" inputmode="email" placeholder="prenom.nom@cargill.com"')}
+    </section>
+    <section class="fsec"><h3 class="fsec-title">Envoi au n+1</h3>
+      <div class="seg-ctl" role="radiogroup" aria-label="Fréquence d'envoi">
+        <button type="button" role="radio" aria-checked="${st.sendMode === 'day'}" class="${st.sendMode === 'day' ? 'on' : ''}" data-act="send-mode" data-v="day">Chaque jour</button>
+        <button type="button" role="radio" aria-checked="${st.sendMode !== 'day'}" class="${st.sendMode !== 'day' ? 'on' : ''}" data-act="send-mode" data-v="week">Chaque semaine</button>
+      </div>
+      <span class="hint">${st.sendMode === 'day' ? 'Un bouton « Envoyer » apparaît sur chaque journée pas encore envoyée. Le reporting de la semaine reste disponible.' : 'Le bouton « Envoyer le reporting de la semaine » est mis en avant. Une journée peut toujours être envoyée seule depuis le jour ouvert.'}</span>
+    </section>
+    <section class="fsec"><h3 class="fsec-title">Journée type</h3>
+      <div class="row2">${tsel('dayStart', 'Début')}${tsel('dayEnd', 'Fin')}</div>
+      <div class="row2">${tsel('lunchStart', 'Pause : début')}${tsel('lunchEnd', 'Pause : fin')}</div>
+      <span class="hint">Sert aux raccourcis « Journée », « Matin », « Après-midi » et au calcul du temps passé.</span>
+    </section>
+    <section class="fsec"><h3 class="fsec-title">PDF</h3>
+      <label class="toggle"><span>Joindre les work orders (WO) en fin de PDF</span><input type="checkbox" id="s_pdfWO" ${st.pdfWO ? 'checked' : ''}></label>
+      <label class="toggle"><span>Ajouter les photos en annexe du PDF</span><input type="checkbox" id="s_pdfPhotos" ${st.pdfPhotos ? 'checked' : ''}></label>
+    </section>
+    ${Gmail.enabled() ? `<section class="fsec"><h3 class="fsec-title">Gmail</h3><span class="hint">${st.gmailGranted ? "Gmail est autorisé : l'appli envoie les comptes rendus directement depuis ta boîte." : "Au premier envoi, Google te demandera d'autoriser l'appli à envoyer des mails depuis ta boîte Gmail."}</span>${st.gmailGranted ? `<button class="btn btn-secondary" data-act="gmail-forget">Ne plus utiliser Gmail directement</button>` : ''}</section>` : ''}
+    <section class="fsec"><h3 class="fsec-title">Sauvegarde</h3>
+      <span class="hint">Tout est enregistré sur ce téléphone uniquement. Fais une sauvegarde de temps en temps (photos comprises) et garde-la dans ton Drive ou tes mails.</span>
+      <div class="btn-row stack"><button class="btn btn-secondary" data-act="backup">${ic('dl')} Sauvegarder mes données</button>
+      <label class="btn btn-secondary">Restaurer une sauvegarde<input type="file" id="restoreIn" accept="application/json,.json" hidden></label></div>
+      <span class="small">${plural(S.reports.length, 'compte rendu enregistré', 'comptes rendus enregistrés')} · version ${APP_VERSION}</span>
+    </section>
+  </main>${tabbar('settings')}`;
+  $$('[data-set]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { S.settings[el.dataset.set] = el.value; saveSettings(); }));
+  $('#s_pdfPhotos').onchange = e => { S.settings.pdfPhotos = e.target.checked; saveSettings(); };
+  $('#s_pdfWO').onchange = e => { S.settings.pdfWO = e.target.checked; saveSettings(); };
+  $('#restoreIn').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) restoreBackup(f); };
+}
+async function makeBackup() {
+  toast('Préparation de la sauvegarde…');
+  const files = await DB.all('files'); const outFiles = [];
+  for (const f of files) outFiles.push({ id: f.id, kind: f.kind, type: f.type, name: f.name, createdAt: f.createdAt, data: b64FromBytes(new Uint8Array(await f.blob.arrayBuffer())) });
+  const json = JSON.stringify({ app: 'reporting-cargill', version: 1, exportedAt: new Date().toISOString(), settings: S.settings, reports: S.reports, wos: S.wos, sent: S.sent, files: outFiles });
+  const name = `reporting-cargill-sauvegarde-${todayKey()}.json`;
+  const blob = new Blob([json], { type: 'application/json' }); const file = new File([blob], name, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: 'Sauvegarde Reporting' }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  if (await saveFile(blob, name)) toast('Sauvegarde enregistrée');
+}
+async function restoreBackup(file) {
+  let data; try { data = JSON.parse(await file.text()); } catch (e) { toast("Ce fichier n'est pas une sauvegarde lisible.", 'err'); return; }
+  if (!data || data.app !== 'reporting-cargill' || !(Array.isArray(data.reports) || Array.isArray(data.wos))) { toast("Ce fichier n'est pas une sauvegarde de l'appli.", 'err'); return; }
+  const isImport = data.kind === 'wo-import', wos = Array.isArray(data.wos) ? data.wos : [], reports = Array.isArray(data.reports) ? data.reports : [];
+  const fresh = isImport ? wos.filter(w => !recById(w.id)) : wos;
+  if (isImport && !fresh.length) { toast(`Ces ${plural(wos.length, 'work order est', 'work orders sont')} déjà dans l'appli.`); return; }
+  const ok = await confirmSheet(isImport
+    ? { title: `Importer ${plural(fresh.length, 'work order', 'work orders')} ?`, text: `${fresh.filter(w => w.status !== 'done' && w.stage !== 'started').length} à traiter, ${fresh.filter(w => w.status !== 'done' && w.stage === 'started').length} à terminer, ${fresh.filter(w => w.status === 'done').length} réalisés.${wos.length - fresh.length ? ` ${plural(wos.length - fresh.length, 'WO est déjà présent et ne sera pas modifié', 'WO sont déjà présents et ne seront pas modifiés')}.` : ''}`, ok: 'Importer' }
+    : { title: 'Restaurer la sauvegarde ?', text: `${plural(reports.length, 'compte rendu', 'comptes rendus')}${wos.length ? ' et ' + plural(wos.length, 'work order', 'work orders') : ''} du ${String(data.exportedAt || '').slice(0, 10)}. Ils s'ajoutent à ceux du téléphone (les mêmes sont remplacés).`, ok: 'Restaurer' });
+  if (!ok) return;
+  const keepFiles = isImport ? new Set(fresh.map(w => w.fileId).filter(Boolean)) : null;
+  for (const f of data.files || []) {
+    if (keepFiles && !keepFiles.has(f.id)) continue;
+    const bin = atob(f.data); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    await DB.put('files', { id: f.id, kind: f.kind, type: f.type, name: f.name, createdAt: f.createdAt, blob: new Blob([u8], { type: f.type }) });
+  }
+  for (const r of reports) await DB.put('reports', r);
+  for (const w of (isImport ? fresh : wos)) await DB.put('wos', w);
+  if (data.settings && !isImport) { S.settings = { ...DEFAULT_SETTINGS, ...data.settings }; await DB.setKV('settings', S.settings); }
+  if (data.sent) { S.sent = { ...data.sent, ...S.sent }; await DB.setKV('sent', S.sent); }
+  S.reports = await DB.all('reports'); S.wos = await DB.all('wos');
+  toast(isImport ? `${plural(fresh.length, 'work order importé', 'work orders importés')}` : 'Sauvegarde restaurée'); route();
+}
+
+/* ---------- Clics ---------- */
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const a = el.dataset.act, k = el.dataset.k;
+  switch (a) {
+    case 'go': go(el.dataset.h); break;
+    case 'tab': if (!S.route || S.route.name !== (el.dataset.h === '' ? 'home' : el.dataset.h === 'wo' ? 'wo' : 'settings')) replaceTo(el.dataset.h); else window.scrollTo({ top: 0, behavior: 'smooth' }); break;
+    case 'wo-open': { const rc = recForNumber(el.dataset.w); go(rc ? 'wo/fiche/' + encodeURIComponent(rc.id) : 'wo/' + encodeURIComponent(el.dataset.w)); break; }
+    case 'rec-open': if (S.selMode) { const id = el.dataset.id; S.sel.has(id) ? S.sel.delete(id) : S.sel.add(id); updateSel(); } else go('wo/fiche/' + encodeURIComponent(el.dataset.id)); break;
+    case 'sel-start': S.selMode = true; S.sel.clear(); { const y = window.scrollY; renderWoFolder(k); window.scrollTo(0, y); } break;
+    case 'sel-cancel': S.selMode = false; S.sel.clear(); { const y = window.scrollY; renderWoFolder(k); window.scrollTo(0, y); } break;
+    case 'sel-all': { const allOn = S.shown.length && S.shown.every(id => S.sel.has(id)); S.shown.forEach(id => allOn ? S.sel.delete(id) : S.sel.add(id)); updateSel(); break; }
+    case 'sel-send': { const ids = S.shown.filter(id => S.sel.has(id)); if (ids.length) openExport('wos', ids); break; }
+    case 'send-shown': if (S.shown.length) openExport('wos', S.shown.slice()); break;
+    case 'filters': openFilters(k); break;
+    case 'stage': { const st = wfState('afaire'); st.stage = st.stage === el.dataset.v ? 'all' : el.dataset.v; renderWoFolder('afaire'); break; }
+    case 'f-rm': { const st = wfState(k), f = activeFilters(st)[Number(el.dataset.i)]; if (!f) break; if (f.k === 'prio' || f.k === 'bld' || f.k === 'type') st[f.k] = st[f.k].filter(x => x !== f.v); else if (f.k === 'date') { st.from = ''; st.to = ''; } else st[f.k] = 'all'; renderWoFolder(k); break; }
+    case 'rec-new-cr': go('cr/nouveau?wo=' + encodeURIComponent(el.dataset.id) + '&date=' + workdayKey()); break;
+    case 'rec-send': openExport('wos', [el.dataset.id]); break;
+    case 'rec-edit': openRecEdit(el.dataset.id); break;
+    case 'rec-status': {
+      const w = recById(el.dataset.id); if (!w) break;
+      if (w.status === 'done') { w.status = 'open'; } else { w.status = 'done'; const rs = reportsOfRec(w); if (!w.doneDate && rs.length) w.doneDate = rs[rs.length - 1].date; }
+      await putRec(w); toast(w.status === 'done' ? 'WO déplacé dans « réalisés »' : 'WO remis dans « à traiter ou à terminer »'); renderRecDetail(w.id); break;
+    }
+    case 'rec-delete': {
+      const w = recById(el.dataset.id); if (!w) break;
+      const ok = await confirmSheet({ title: 'Supprimer ce work order ?', text: 'Il disparaît des dossiers, avec son document. Les comptes rendus déjà saisis restent dans les semaines.', ok: 'Supprimer', danger: true });
+      if (!ok) break;
+      const back2 = w.status === 'done' ? 'wo/realises' : 'wo/afaire';
+      await DB.del('wos', w.id); S.wos = S.wos.filter(x => x.id !== w.id);
+      if (w.fileId && !fileInUse(w.fileId)) { await DB.del('files', w.fileId); urlCache.delete(w.fileId); }
+      toast('Work order supprimé'); replaceTo(back2); break;
+    }
+    case 'export-wo': openExport('wo', k); break;
+    case 'view-file': openFileViewer(el.dataset.id, el.dataset.t || 'Fichier'); break;
+    case 'back': back(el.dataset.h || ''); break;
+    case 'new': go('cr/nouveau?date=' + k); break;
+    case 'edit': go('cr/' + el.dataset.id); break;
+    case 'toggle-past': S.showPast = !S.showPast; renderHome(); if (S.showPast) { const c = $('.week.current'); if (c) window.scrollTo(0, 0); } break;
+    case 'toggle-day': {
+      const opening = !S.openDays.has(k);
+      S.openDays.clear(); if (opening) S.openDays.add(k);
+      const before = el.getBoundingClientRect().top, y = window.scrollY;
+      renderHome(); window.scrollTo(0, y);
+      const head = $(`#day-${k} .day-head`);
+      if (head) { const shift = head.getBoundingClientRect().top - before; if (shift) window.scrollBy(0, shift); }
+      break;
+    }
+    case 'toggle-week': {
+      const cur = el.dataset.cur === '1', key = cur ? '!' + k : k;
+      S.openWeeks.has(key) ? S.openWeeks.delete(key) : S.openWeeks.add(key); { const y = window.scrollY; renderHome(); window.scrollTo(0, y); } break;
+    }
+    case 'pick-date': openCalendar(todayKey(), key => { focusDay(key); renderHome(); }, 'Aller à une date'); break;
+    case 'export-day': openExport('day', k); break;
+    case 'export-week': openExport('week', k); break;
+    case 'exp-retry': openExport(EXP.ctx.scope, EXP.ctx.key); break;
+    case 'exp-view': if (EXP && EXP.blob) showPdfViewer(); break;
+    case 'exp-back': if (EXP && EXP.blob) showExportSheet(); break;
+    case 'exp-dl': if (EXP && EXP.blob) { if (await saveFile(EXP.blob, EXP.ctx.filename)) toast('PDF enregistré'); } break;
+    case 'exp-share': expShare(); break;
+    case 'exp-gmail': expGmail(el); break;
+    case 'sheet-close': closeSheet(); break;
+    // Formulaire
+    case 'form-save': saveForm(); break;
+    case 'form-save-next': saveForm(true); break;
+    case 'form-cancel': cancelForm(); break;
+    case 'form-delete': deleteReport(); break;
+    case 'form-date': openCalendar(F.date, key => { F.date = key; const d = fromKey(key); $('#fDateTxt').textContent = cap(fmtLongY(d)); $('#fDateWk').textContent = 'Semaine ' + isoWeek(d).week; refreshCalc(); scheduleDraft(); }, 'Date de l\'intervention'); break;
+    case 'preset': F.start = el.dataset.a; F.end = el.dataset.b; $('#fStart').value = F.start; $('#fEnd').value = F.end; F.durationManual = false; refreshCalc(); markPresets(); scheduleDraft(); break;
+    case 'dur-auto': F.durationManual = false; refreshCalc(); scheduleDraft(); break;
+    case 'cum-auto': F.cumulManual = null; refreshCalc(); scheduleDraft(); break;
+    case 'mic': toggleMic(el); break;
+    case 'ph-rm': { const id = el.dataset.id; F.photos = F.photos.filter(x => x !== id); if (F.added.includes(id)) { F.added = F.added.filter(x => x !== id); DB.del('files', id); } else F.removed.push(id); renderPhotos(); scheduleDraft(); break; }
+    case 'wo-view': if (F && F.woFile) openFileViewer(F.woFile, 'Work order'); break;
+    case 'wo-remove': { const id = F.woFile; if (F.added.includes(id)) { F.added = F.added.filter(x => x !== id); DB.del('files', id); } else F.removed.push(id); F.woFile = null; F.woRead = null; renderWoStatus('none'); scheduleDraft(); break; }
+    case 'wo-reread': readWo(); break;
+    case 'wo-demo': { const bin = atob(DEMO_WO_B64); const u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); onWoFile(new File([u8], 'WO_exemple_418320155.pdf', { type: 'application/pdf' })); break; }
+    case 'wo-use': {
+      const c = F.woRead.conflicts.find(x => x.k === el.dataset.k); if (!c) break;
+      F[c.k] = c.v; $('#' + MAP_FIELDS[c.k]).value = c.v; F.woRead.conflicts = F.woRead.conflicts.filter(x => x !== c); F.woRead.filled.push(c.k);
+      const rt = $('#rt-' + c.k); if (rt) rt.hidden = false; refreshCalc(); renderWoStatus('done'); scheduleDraft(); break;
+    }
+    case 'wo-reuse': {
+      const h = woHistory(F.wo, F); const last = h && h.all[h.all.length - 1]; if (!last) break;
+      for (const key of ['building', 'request', 'location']) if (!F[key] && last[key]) { F[key] = last[key]; $('#' + MAP_FIELDS[key]).value = last[key]; }
+      refreshCalc(); scheduleDraft(); break;
+    }
+    case 'draft-resume': {
+      const d = await DB.getKV('draft', null); if (!d) break;
+      F = { ...d, added: d.added || [], removed: d.removed || [] }; drawForm(null); break;
+    }
+    case 'draft-drop': {
+      const d = await DB.getKV('draft', null);
+      if (d && d.added) for (const id of d.added) if (!F.photos.includes(id) && F.woFile !== id) await DB.del('files', id);
+      await clearDraft(); $('#draftBanner')?.remove(); break;
+    }
+    // Réglages
+    case 'backup': makeBackup(); break;
+    case 'send-mode': S.settings.sendMode = el.dataset.v === 'day' ? 'day' : 'week'; saveSettings(); { const y = window.scrollY; renderSettings(); window.scrollTo(0, y); } break;
+    case 'gmail-forget': try { if (window.google && Gmail.token) google.accounts.oauth2.revoke(Gmail.token); } catch (e) { } S.settings.gmailGranted = false; Gmail.token = null; saveSettings(); renderSettings(); toast('Gmail ne sera plus utilisé directement'); break;
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('#sheetRoot').firstChild) closeSheet();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('div[role=button][data-act]')) { e.preventDefault(); e.target.click(); }
+});
+
+/* ---------- Démarrage ---------- */
+async function cleanupOrphans() {
+  try {
+    const draft = await DB.getKV('draft', null);
+    const used = new Set();
+    for (const r of S.reports) { (r.photos || []).forEach(id => used.add(id)); if (r.woFile) used.add(r.woFile); }
+    for (const w of S.wos) if (w.fileId) used.add(w.fileId);
+    if (draft) { (draft.photos || []).forEach(id => used.add(id)); if (draft.woFile) used.add(draft.woFile); }
+    const files = await DB.all('files');
+    for (const f of files) if (!used.has(f.id) && Date.now() - (f.createdAt || 0) > 6 * 3600e3) await DB.del('files', f.id);
+  } catch (e) { }
+}
+const SEED_VERSION = 'wo29-v1';
+async function seedPreview() {
+  if (!PREVIEW || (await DB.getKV('seed', null)) === SEED_VERSION) return;
+  for (const st of ['reports', 'wos', 'files']) await DB.clear(st);
+  await DB.del('kv', 'draft');
+  let n = 0;
+  const mk = (date, start, end, request, o = {}) => ({ id: uid() + n, date, start, end, wo: '', building: '', location: '', equipment: '', request, comments: '', duration: 'duration' in o ? o.duration : autoDuration(start, end), durationManual: 'duration' in o, cumulManual: null, photos: [], woFile: null, createdAt: Date.now() + (n++), updatedAt: Date.now(), ...o });
+  const rows = [
+    mk('2026-09-21', '07:00', '15:00', 'Pose des panneaux signalétiques'),
+    mk('2026-09-22', '', '', 'Pose des panneaux signalétiques', { comments: 'Horaires à préciser', duration: 420 }),
+    mk('2026-10-01', '', '', 'Préparation faïence laboratoire', { duration: null }),
+    mk('2026-10-02', '', '', 'Déplacement réfrigérateur, pose de grilles et panneaux dans le hall administratif', { comments: 'Horaires à préciser', duration: null }),
+    mk('2026-10-05', '07:00', '12:00', 'Préparation béton et traitement des fers', { wo: '418319320', building: 'Bât. 27' }),
+    mk('2026-10-05', '13:00', '14:15', 'Deuxième couche plafond'),
+    mk('2026-10-05', '14:15', '16:00', 'Déplacement meubles cuisine pour nettoyage GSF'),
+    mk('2026-10-06', '07:00', '09:00', 'Rangement bureau F. Germont vers base vie'),
+    mk('2026-10-06', '14:00', '15:00', 'Point reporting et WO avec F. Germont'),
+    mk('2026-10-07', '07:00', '15:00', 'Réparation mortier poteau et sous-face de poutre', { wo: '418319320', building: 'Bât. 27' })
+  ];
+  const sentAt = { '2026-09-21': '2026-09-25T15:20', '2026-09-22': '2026-09-25T15:20', '2026-10-01': '2026-10-02T15:10', '2026-10-02': '2026-10-02T15:10', '2026-10-05': '2026-10-05T16:05', '2026-10-06': '2026-10-06T15:12' };
+  if (PREVIEW_IMPORT) {
+    for (const f of PREVIEW_IMPORT.files) { const bin = atob(f.data); const u8 = new Uint8Array(bin.length); for (let k = 0; k < bin.length; k++) u8[k] = bin.charCodeAt(k); await DB.put('files', { id: f.id, kind: f.kind, type: f.type, name: f.name, createdAt: f.createdAt, blob: new Blob([u8], { type: f.type }) }); }
+    for (const w of PREVIEW_IMPORT.wos) await DB.put('wos', w);
+  }
+  S.wos = await DB.all('wos');
+  for (const r of rows) { if (sentAt[r.date]) { r.sentAt = new Date(sentAt[r.date]).getTime(); r.sentHow = 'gmail'; } await DB.put('reports', r); }
+  S.sent = { 'week:2026-09-21': { at: new Date('2026-09-25T15:20').getTime(), how: 'gmail' }, 'week:2026-09-28': { at: new Date('2026-10-02T15:10').getTime(), how: 'gmail' }, 'day:2026-10-05': { at: new Date('2026-10-05T16:05').getTime(), how: 'gmail' }, 'day:2026-10-06': { at: new Date('2026-10-06T15:12').getTime(), how: 'gmail' } };
+  await DB.setKV('sent', S.sent);
+  S.reports = await DB.all('reports');
+  S.openWeeks.add('2026-10-05'); S.openDays.clear(); S.openDays.add('2026-10-05');
+  await DB.setKV('seed', SEED_VERSION);
+}
+(async function start() {
+  await DB.open();
+  S.settings = { ...DEFAULT_SETTINGS, ...(await DB.getKV('settings', {})) };
+  S.sent = await DB.getKV('sent', {});
+  S.reports = await DB.all('reports');
+  S.wos = await DB.all('wos');
+  await seedPreview();
+  route();
+  cleanupOrphans();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => { });
+  if (!PREVIEW && 'serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
+})();
+</script>
+</body>
+</html>
